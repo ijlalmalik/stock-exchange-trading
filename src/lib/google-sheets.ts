@@ -27,7 +27,7 @@ function parseNum(val: string): number {
 }
 
 export async function fetchPortfolioData(): Promise<StockHolding[]> {
-  const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Sheet1!A2:P10?key=${API_KEY}`;
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Main%20Portfolio!A2:P10?key=${API_KEY}`;
   const res = await fetch(url);
   if (!res.ok) throw new Error("Failed to fetch sheet data");
   const json = await res.json();
