@@ -11,11 +11,11 @@ function CustomTooltip({ active, payload }: any) {
   if (!active || !payload?.[0]) return null;
   const d = payload[0].payload;
   return (
-    <div className="rounded-lg border border-border bg-card px-3 py-2 shadow-lg">
-      <p className="text-sm font-semibold text-card-foreground">{d.company}</p>
-      <p className="text-xs text-muted-foreground">{d.script}</p>
-      <p className="text-sm font-mono text-card-foreground">PKR {d.currentValue.toLocaleString()}</p>
-      <p className="text-xs text-muted-foreground">{d.pct.toFixed(1)}% of portfolio</p>
+    <div className="rounded-md border border-border/50 bg-card/95 backdrop-blur-sm px-2.5 py-1.5 shadow-lg text-[11px]">
+      <p className="font-semibold text-card-foreground leading-tight">{d.script}</p>
+      <p className="text-[10px] text-muted-foreground leading-tight">{d.company}</p>
+      <p className="font-mono text-card-foreground mt-0.5">PKR {d.currentValue.toLocaleString()}</p>
+      <p className="text-muted-foreground">{d.pct.toFixed(1)}%</p>
     </div>
   );
 }
@@ -63,10 +63,13 @@ export function AllocationChart({ holdings }: { holdings: StockHolding[] }) {
         <div className="flex-1 w-full space-y-2">
           {data.map((h, i) => (
             <div key={h.script} className="animate-fade-in group" style={{ animationDelay: `${i * 60}ms` }}>
-              <div className="flex items-center justify-between mb-1">
+              <div className="flex items-center justify-between mb-0.5">
                 <div className="flex items-center gap-2">
                   <span className="h-2.5 w-2.5 rounded-full flex-shrink-0" style={{ background: COLORS[i % COLORS.length] }} />
-                  <span className="text-sm font-semibold text-foreground">{h.script}</span>
+                  <div className="leading-tight">
+                    <span className="text-sm font-semibold text-foreground">{h.script}</span>
+                    <p className="text-[10px] text-muted-foreground">{h.company}</p>
+                  </div>
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="text-xs font-mono text-muted-foreground">PKR {h.currentValue.toLocaleString()}</span>
