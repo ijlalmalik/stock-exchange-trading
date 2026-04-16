@@ -7,24 +7,31 @@ interface PnLChartProps {
 }
 
 function CustomLabel(props: any) {
-  const { x, y, width, height, value, index, activeIndex } = props;
-  if (index !== activeIndex || !width || !height) return null;
-  
-  const isPositive = value >= 0;
-  const labelY = isPositive ? y + height / 2 : y + height / 2;
-  
+  const { x, y, width, height, value, index, activeIndex, payload } = props;
+  if (x == null || y == null || !width || !height) return null;
+
+  const isPositive = (payload?.change ?? 0) >= 0;
+  const isActive = index === activeIndex;
+  const labelY = height < 32 ? y + height / 2 : isPositive ? y + 16 : y + height - 16;
+
   return (
     <text
       x={x + width / 2}
       y={labelY}
-      fill="white"
+      fill="var(--color-chart-label)"
       textAnchor="middle"
       dominantBaseline="middle"
-      fontSize={11}
-      fontWeight={600}
+      fontSize={10}
+      fontWeight={700}
       fontFamily="JetBrains Mono, monospace"
-      className="animate-fade-in"
-      style={{ opacity: 1, transition: "opacity 0.3s ease-in-out" }}
+      letterSpacing="0.02em"
+      style={{
+        opacity: isActive ? 1 : 0,
+        transform: `translateY(${isActive ? 0 : isPositive ? 6 : -6}px)`,
+        transformOrigin: `${x + width / 2}px ${labelY}px`,
+        transition: "opacity 220ms ease, transform 220ms ease",
+        pointerEvents: "none",
+      }}
     >
       {value >= 0 ? "+" : ""}{value.toFixed(2)}%
     </text>
@@ -56,12 +63,20 @@ export function PnLChart({ holdings }: PnLChartProps) {
         >
           <XAxis dataKey="script" tick={{ fontSize: 11, fill: "var(--color-muted-foreground)" }} axisLine={false} tickLine={false} />
           <YAxis tick={{ fontSize: 11, fill: "var(--color-muted-foreground)" }} axisLine={false} tickLine={false} />
-          <Bar dataKey="change" radius={[4, 4, 0, 0]} maxBarSize={40}>
+          <Bar
+            dataKey="change"
+            radius={[4, 4, 0, 0]}
+            maxBarSize={40}
+            onMouseOver={(_: unknown, index: number) => setActiveIndex(index)}
+            onMouseOut={() => setActiveIndex(null)}
+          >
             {data.map((entry, i) => (
               <Cell
                 key={i}
                 fill={entry.change >= 0 ? "var(--color-gain)" : "var(--color-loss)"}
                 fillOpacity={activeIndex === null || activeIndex === i ? 1 : 0.4}
+                onMouseEnter={() => setActiveIndex(i)}
+                onMouseLeave={() => setActiveIndex(null)}
                 style={{ transition: "fill-opacity 0.3s ease" }}
               />
             ))}

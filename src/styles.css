@@ -49,6 +49,7 @@
   --color-surface: var(--surface);
   --color-surface-hover: var(--surface-hover);
   --color-ticker-bg: var(--ticker-bg);
+  --color-chart-label: var(--chart-label);
 
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
@@ -84,6 +85,7 @@
   --surface: oklch(0.97 0.003 250);
   --surface-hover: oklch(0.94 0.006 250);
   --ticker-bg: oklch(0.93 0.008 250);
+  --chart-label: oklch(1 0 0);
 
   --chart-1: oklch(0.55 0.18 250);
   --chart-2: oklch(0.6 0.15 170);
@@ -128,6 +130,7 @@
   --surface: oklch(0.15 0.02 260);
   --surface-hover: oklch(0.2 0.02 260);
   --ticker-bg: oklch(0.18 0.02 260);
+  --chart-label: oklch(0.98 0.002 250);
 
   --chart-1: oklch(0.65 0.2 250);
   --chart-2: oklch(0.7 0.17 170);

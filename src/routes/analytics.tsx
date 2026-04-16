@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { fetchPortfolioData, getPortfolioSummary, type StockHolding } from "@/lib/google-sheets";
-import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Cell, PieChart, Pie, Tooltip } from "recharts";
 import { TrendingUp, TrendingDown, Target, BarChart3 } from "lucide-react";
 
 export const Route = createFileRoute("/analytics")({
@@ -40,26 +39,18 @@ function AnalyticsPage() {
     position: h.week52High > h.week52Low ? ((h.ldcp - h.week52Low) / (h.week52High - h.week52Low)) * 100 : 50,
   }));
 
-  // Allocation data for pie
-  const allocData = holdings.map((h) => ({
-    name: h.script,
-    value: h.currentValue,
-    pct: totalCurrent > 0 ? (h.currentValue / totalCurrent) * 100 : 0,
-  }));
-
-  const COLORS = [
-    "oklch(0.65 0.2 250)", "oklch(0.6 0.18 170)", "oklch(0.7 0.2 45)",
-    "oklch(0.6 0.22 310)", "oklch(0.65 0.2 25)", "oklch(0.55 0.15 200)",
-    "oklch(0.7 0.18 130)", "oklch(0.6 0.2 80)", "oklch(0.55 0.22 340)",
-  ];
-
-  // Performance comparison
   const perfData = [...holdings]
     .sort((a, b) => b.changePercent - a.changePercent)
     .map((h) => ({
       script: h.script,
+      company: h.company,
+      ldcp: h.ldcp,
+      change: h.change,
       changePercent: h.changePercent,
+      weight: totalCurrent > 0 ? (h.currentValue / totalCurrent) * 100 : 0,
     }));
+
+  const maxAbsChange = Math.max(...perfData.map((holding) => Math.abs(holding.changePercent)), 1);
 
   return (
     <div className="animate-fade-in space-y-5">
@@ -108,18 +99,62 @@ function AnalyticsPage() {
 
       {/* Performance Comparison */}
       <div className="animate-fade-in rounded-xl border border-border bg-card p-5" style={{ animationDelay: "200ms" }}>
-        <h3 className="mb-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Performance Comparison (%)</h3>
-        <ResponsiveContainer width="100%" height={280}>
-          <BarChart data={perfData} margin={{ top: 5, right: 5, bottom: 5, left: 5 }} layout="vertical">
-            <XAxis type="number" tick={{ fontSize: 11, fill: "var(--color-muted-foreground)" }} axisLine={false} tickLine={false} />
-            <YAxis dataKey="script" type="category" tick={{ fontSize: 11, fill: "var(--color-muted-foreground)" }} axisLine={false} tickLine={false} width={60} />
-            <Bar dataKey="changePercent" radius={[0, 4, 4, 0]} maxBarSize={24}>
-              {perfData.map((entry, i) => (
-                <Cell key={i} fill={entry.changePercent >= 0 ? "var(--color-gain)" : "var(--color-loss)"} />
-              ))}
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
+        <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Performance Comparison (%)</h3>
+            <p className="mt-1 text-sm text-muted-foreground">Ranked daily view with clearer price, move, and holding weight.</p>
+          </div>
+          <div className="text-[11px] text-muted-foreground">Sorted highest to lowest % change</div>
+        </div>
+
+        <div className="space-y-3">
+          {perfData.map((holding, index) => {
+            const positive = holding.changePercent >= 0;
+            const barWidth = Math.max((Math.abs(holding.changePercent) / maxAbsChange) * 100, 8);
+
+            return (
+              <div
+                key={holding.script}
+                className="rounded-xl border border-border bg-surface px-4 py-3 transition-all duration-300 hover:bg-surface-hover"
+              >
+                <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-semibold uppercase tracking-[0.24em] text-muted-foreground">#{index + 1}</span>
+                      <h4 className="text-sm font-bold text-foreground">{holding.script}</h4>
+                    </div>
+                    <p className="truncate text-xs text-muted-foreground">{holding.company}</p>
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-2 lg:justify-end">
+                    <div className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold ${positive ? "bg-gain-bg text-gain" : "bg-loss-bg text-loss"}`}>
+                      {positive ? <TrendingUp className="h-3.5 w-3.5" /> : <TrendingDown className="h-3.5 w-3.5" />}
+                      {positive ? "+" : ""}{holding.changePercent.toFixed(2)}%
+                    </div>
+                    <div className="rounded-full border border-border bg-card px-2.5 py-1 text-xs text-muted-foreground">
+                      LDCP <span className="font-semibold text-foreground">PKR {holding.ldcp.toFixed(2)}</span>
+                    </div>
+                    <div className="rounded-full border border-border bg-card px-2.5 py-1 text-xs text-muted-foreground">
+                      Move <span className={`font-semibold ${positive ? "text-gain" : "text-loss"}`}>{positive ? "+" : ""}{holding.change.toLocaleString()}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-3 flex items-center gap-3">
+                  <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-muted">
+                    <div
+                      className={`h-full rounded-full transition-all duration-500 ${positive ? "bg-gain" : "bg-loss"}`}
+                      style={{ width: `${barWidth}%` }}
+                    />
+                  </div>
+                  <div className="w-16 text-right text-xs font-mono text-muted-foreground">
+                    {holding.weight.toFixed(1)}%
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       {/* 52-Week Range */}
