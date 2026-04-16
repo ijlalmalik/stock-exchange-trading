@@ -35,7 +35,7 @@ function Dashboard() {
   const pnlVariant = summary.totalPnL >= 0 ? "gain" : "loss";
 
   return (
-    <div className="space-y-5">
+    <div className="animate-fade-in space-y-5">
       <div>
         <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
         <p className="text-sm text-muted-foreground">Overview of your portfolio performance</p>
