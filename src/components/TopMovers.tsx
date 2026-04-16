@@ -14,18 +14,19 @@ export function TopMovers({ holdings }: TopMoversProps) {
   return (
     <div className="grid gap-5 lg:grid-cols-2">
       {/* Gainers */}
-      <div className="rounded-xl border border-border bg-card p-5">
+      <div className="animate-fade-in rounded-xl border border-border bg-card p-5">
         <div className="mb-4 flex items-center gap-2">
           <TrendingUp className="h-4 w-4 text-gain" />
           <h3 className="text-xs font-semibold uppercase tracking-wider text-gain">Top Gainers</h3>
         </div>
         <div className="space-y-1">
-          {gainers.map((h) => (
+          {gainers.map((h, idx) => (
             <Link
               key={h.script}
               to="/portfolio"
               search={{ highlight: h.script }}
-              className="flex items-center justify-between rounded-lg px-3 py-2.5 transition-colors hover:bg-surface-hover"
+              className="animate-fade-in flex items-center justify-between rounded-lg px-3 py-2.5 transition-all duration-200 hover:bg-surface-hover"
+              style={{ animationDelay: `${idx * 80}ms` }}
             >
               <div>
                 <p className="text-sm font-bold text-foreground">{h.script}</p>
@@ -42,18 +43,19 @@ export function TopMovers({ holdings }: TopMoversProps) {
       </div>
 
       {/* Losers */}
-      <div className="rounded-xl border border-border bg-card p-5">
+      <div className="animate-fade-in rounded-xl border border-border bg-card p-5" style={{ animationDelay: "100ms" }}>
         <div className="mb-4 flex items-center gap-2">
           <TrendingDown className="h-4 w-4 text-loss" />
           <h3 className="text-xs font-semibold uppercase tracking-wider text-loss">Top Losers</h3>
         </div>
         <div className="space-y-1">
-          {losers.map((h) => (
+          {losers.map((h, idx) => (
             <Link
               key={h.script}
               to="/portfolio"
               search={{ highlight: h.script }}
-              className="flex items-center justify-between rounded-lg px-3 py-2.5 transition-colors hover:bg-surface-hover"
+              className="animate-fade-in flex items-center justify-between rounded-lg px-3 py-2.5 transition-all duration-200 hover:bg-surface-hover"
+              style={{ animationDelay: `${(idx + 1) * 80 + 100}ms` }}
             >
               <div>
                 <p className="text-sm font-bold text-foreground">{h.script}</p>
