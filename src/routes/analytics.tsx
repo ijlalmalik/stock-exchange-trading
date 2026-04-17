@@ -279,7 +279,7 @@ function AnalyticsPage() {
                     borderRadius: 8,
                     fontSize: 12,
                   }}
-                  formatter={(v: number) => [formatPKR(v), "Value"]}
+                  formatter={(v) => [formatPKR(Number(v)), "Value"]}
                 />
                 <Area type="monotone" dataKey="value" stroke="oklch(0.65 0.20 250)" strokeWidth={2} fill="url(#growthFill)" />
               </AreaChart>
