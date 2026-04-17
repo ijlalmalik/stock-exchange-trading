@@ -56,6 +56,13 @@ function PortfolioPage() {
           <h1 className="text-2xl font-bold text-foreground">Portfolio</h1>
           <p className="text-sm text-muted-foreground">Detailed view of all holdings</p>
         </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <HoldingsManager />
+          <RefreshButton />
+        </div>
+      </div>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="text-xs text-muted-foreground">{holdings.length} holdings</div>
         <div className="flex items-center gap-2">
           {/* Search */}
           <div className="relative">

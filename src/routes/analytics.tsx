@@ -1,22 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
-import { fetchPortfolioData, getPortfolioSummary, type StockHolding } from "@/lib/google-sheets";
+import { getPortfolioSummary } from "@/lib/google-sheets";
+import { usePortfolio } from "@/lib/portfolio-store";
 import { TrendingUp, TrendingDown, Target, BarChart3 } from "lucide-react";
+import { RefreshButton } from "@/components/RefreshButton";
 
 export const Route = createFileRoute("/analytics")({
   component: AnalyticsPage,
 });
 
 function AnalyticsPage() {
-  const [holdings, setHoldings] = useState<StockHolding[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchPortfolioData()
-      .then(setHoldings)
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, []);
+  const { holdings, loading } = usePortfolio();
 
   if (loading) {
     return (
