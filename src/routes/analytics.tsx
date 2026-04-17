@@ -392,6 +392,64 @@ function AnalyticsPage() {
         </div>
       </div>
 
+      {/* 52-Week Range */}
+      <div className="rounded-xl border border-border bg-card p-5">
+        <div className="mb-4 flex items-center justify-between">
+          <div>
+            <h3 className="text-sm font-bold text-foreground">52-Week Range</h3>
+            <p className="text-xs text-muted-foreground">Where each stock trades between its yearly low and high</p>
+          </div>
+          <div className="hidden gap-3 text-[10px] uppercase tracking-wider text-muted-foreground sm:flex">
+            <span className="inline-flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-loss" /> Low</span>
+            <span className="inline-flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-primary" /> Current</span>
+            <span className="inline-flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-gain" /> High</span>
+          </div>
+        </div>
+        <div className="grid gap-4 md:grid-cols-2">
+          {holdings.map((h, idx) => {
+            const range = Math.max(h.week52High - h.week52Low, 0.0001);
+            const rawPct = ((h.ldcp - h.week52Low) / range) * 100;
+            const pct = Math.min(100, Math.max(0, rawPct));
+            const nearHigh = pct >= 80;
+            const nearLow = pct <= 20;
+            return (
+              <div
+                key={h.script}
+                className="animate-fade-in group rounded-lg border border-border bg-surface/50 p-4 transition-all hover:border-primary/40 hover:shadow-md"
+                style={{ animationDelay: `${idx * 30}ms` }}
+              >
+                <div className="mb-2 flex items-baseline justify-between gap-2">
+                  <div className="min-w-0">
+                    <div className="font-bold text-foreground">{h.script}</div>
+                    <div className="truncate text-xs text-muted-foreground">{h.company}</div>
+                  </div>
+                  <div className="text-right">
+                    <div className="font-mono text-sm font-bold text-foreground">{h.ldcp.toFixed(2)}</div>
+                    <div className={`text-[10px] font-semibold uppercase tracking-wider ${nearHigh ? "text-gain" : nearLow ? "text-loss" : "text-muted-foreground"}`}>
+                      {pct.toFixed(0)}% of range
+                    </div>
+                  </div>
+                </div>
+                <div className="relative mt-3 h-2 rounded-full bg-gradient-to-r from-loss/30 via-amber-500/30 to-gain/30">
+                  <div
+                    className="absolute -top-1 h-4 w-1 rounded-full bg-primary shadow-[0_0_0_3px_var(--color-background)] transition-all duration-500"
+                    style={{ left: `calc(${pct}% - 2px)` }}
+                    title={`Current: ${h.ldcp.toFixed(2)}`}
+                  />
+                </div>
+                <div className="mt-2 flex justify-between text-[11px] font-mono">
+                  <span className="text-loss">{h.week52Low.toFixed(2)}</span>
+                  <span className="text-muted-foreground">
+                    {h.upFromLow >= 0 ? "+" : ""}{h.upFromLow.toFixed(1)}% from low · −{Math.abs(h.downFromHigh).toFixed(1)}% from high
+                  </span>
+                  <span className="text-gain">{h.week52High.toFixed(2)}</span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
       {/* Insights */}
       <div className="rounded-xl border border-border bg-card p-5">
         <h3 className="text-sm font-bold text-foreground">Insights</h3>
