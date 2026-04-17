@@ -306,7 +306,10 @@ function AnalyticsPage() {
                     fontSize: 11,
                     padding: "6px 10px",
                   }}
-                  formatter={(v: number, _n, p: { payload?: { pct: number } }) => [`${formatPKR(v)} (${p.payload?.pct.toFixed(1)}%)`, ""]}
+                  formatter={(v, _n, p) => {
+                    const pct = (p as { payload?: { pct?: number } })?.payload?.pct ?? 0;
+                    return [`${formatPKR(Number(v))} (${pct.toFixed(1)}%)`, ""];
+                  }}
                 />
               </PieChart>
             </ResponsiveContainer>
