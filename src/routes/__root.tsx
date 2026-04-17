@@ -2,6 +2,7 @@ import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/r
 import appCss from "../styles.css?url";
 import { Sidebar } from "@/components/Sidebar";
 import { ThemeProvider } from "@/lib/theme";
+import { PortfolioProvider } from "@/lib/portfolio-store";
 
 function NotFoundComponent() {
   return (
@@ -64,12 +65,14 @@ function RootShell({ children }: { children: React.ReactNode }) {
 function RootComponent() {
   return (
     <ThemeProvider>
-      <div className="flex min-h-screen">
-        <Sidebar />
-        <main className="ml-56 flex-1 p-6">
-          <Outlet />
-        </main>
-      </div>
+      <PortfolioProvider>
+        <div className="flex min-h-screen">
+          <Sidebar />
+          <main className="ml-56 flex-1 p-6">
+            <Outlet />
+          </main>
+        </div>
+      </PortfolioProvider>
     </ThemeProvider>
   );
 }

@@ -1,7 +1,9 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
-import { fetchPortfolioData, type StockHolding } from "@/lib/google-sheets";
+import { usePortfolio } from "@/lib/portfolio-store";
 import { ArrowUpRight, ArrowDownRight, Search, LayoutGrid, List, X } from "lucide-react";
+import { RefreshButton } from "@/components/RefreshButton";
+import { HoldingsManager } from "@/components/HoldingsManager";
 
 type PortfolioSearch = { highlight?: string };
 
@@ -14,17 +16,9 @@ export const Route = createFileRoute("/portfolio")({
 
 function PortfolioPage() {
   const { highlight } = Route.useSearch();
-  const [holdings, setHoldings] = useState<StockHolding[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { holdings, loading } = usePortfolio();
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
   const [searchQuery, setSearchQuery] = useState("");
-
-  useEffect(() => {
-    fetchPortfolioData()
-      .then(setHoldings)
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, []);
 
   useEffect(() => {
     if (highlight && !loading) {
@@ -62,6 +56,13 @@ function PortfolioPage() {
           <h1 className="text-2xl font-bold text-foreground">Portfolio</h1>
           <p className="text-sm text-muted-foreground">Detailed view of all holdings</p>
         </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <HoldingsManager />
+          <RefreshButton />
+        </div>
+      </div>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="text-xs text-muted-foreground">{holdings.length} holdings</div>
         <div className="flex items-center gap-2">
           {/* Search */}
           <div className="relative">

@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Search, X, Radio } from "lucide-react";
+import { RefreshButton } from "@/components/RefreshButton";
 
 interface LDCPEntry {
   symbol: string;
@@ -54,12 +55,19 @@ function LDCPPage() {
   const [sortBy, setSortBy] = useState<"symbol" | "price" | "volume" | "idxWt">("symbol");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
 
-  useEffect(() => {
+  const load = useCallback(() => {
     fetchLDCPData()
       .then(setData)
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    load();
+    const onRefresh = () => load();
+    window.addEventListener("portfolio:refresh", onRefresh);
+    return () => window.removeEventListener("portfolio:refresh", onRefresh);
+  }, [load]);
 
   const handleSort = (col: typeof sortBy) => {
     if (sortBy === col) {
@@ -104,20 +112,23 @@ function LDCPPage() {
           </div>
           <p className="text-sm text-muted-foreground">{data.length} symbols — Last Day Closing Prices from PSX</p>
         </div>
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <input
-            type="text"
-            placeholder="Search symbol or company..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="h-9 w-64 rounded-lg border border-border bg-surface pl-9 pr-8 text-sm text-foreground placeholder:text-muted-foreground outline-none transition-all duration-200 focus:border-primary focus:ring-1 focus:ring-primary"
-          />
-          {search && (
-            <button onClick={() => setSearch("")} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
-              <X className="h-3.5 w-3.5" />
-            </button>
-          )}
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <input
+              type="text"
+              placeholder="Search symbol or company..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="h-9 w-64 rounded-lg border border-border bg-surface pl-9 pr-8 text-sm text-foreground placeholder:text-muted-foreground outline-none transition-all duration-200 focus:border-primary focus:ring-1 focus:ring-primary"
+            />
+            {search && (
+              <button onClick={() => setSearch("")} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
+                <X className="h-3.5 w-3.5" />
+              </button>
+            )}
+          </div>
+          <RefreshButton />
         </div>
       </div>
 

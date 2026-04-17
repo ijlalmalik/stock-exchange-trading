@@ -1,22 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
-import { fetchPortfolioData, getPortfolioSummary, type StockHolding } from "@/lib/google-sheets";
+import { getPortfolioSummary } from "@/lib/google-sheets";
+import { usePortfolio } from "@/lib/portfolio-store";
 import { TrendingUp, TrendingDown, Target, BarChart3 } from "lucide-react";
+import { RefreshButton } from "@/components/RefreshButton";
 
 export const Route = createFileRoute("/analytics")({
   component: AnalyticsPage,
 });
 
 function AnalyticsPage() {
-  const [holdings, setHoldings] = useState<StockHolding[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchPortfolioData()
-      .then(setHoldings)
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, []);
+  const { holdings, loading } = usePortfolio();
 
   if (loading) {
     return (
@@ -54,9 +47,12 @@ function AnalyticsPage() {
 
   return (
     <div className="animate-fade-in space-y-5">
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">Analytics</h1>
-        <p className="text-sm text-muted-foreground">Deep dive into your portfolio performance</p>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">Analytics</h1>
+          <p className="text-sm text-muted-foreground">Deep dive into your portfolio performance</p>
+        </div>
+        <RefreshButton />
       </div>
 
       {/* Summary Cards */}

@@ -28,8 +28,13 @@ export function KSE100Ticker() {
     const interval = setInterval(() => {
       void fetchKSE100();
     }, 60000);
+    const onRefresh = () => void fetchKSE100();
+    window.addEventListener("portfolio:refresh", onRefresh);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener("portfolio:refresh", onRefresh);
+    };
   }, []);
 
   const isUp = data ? data.change > 0 : false;
