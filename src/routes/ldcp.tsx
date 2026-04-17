@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Search, X, Radio } from "lucide-react";
+import { RefreshButton } from "@/components/RefreshButton";
 
 interface LDCPEntry {
   symbol: string;
@@ -54,12 +55,19 @@ function LDCPPage() {
   const [sortBy, setSortBy] = useState<"symbol" | "price" | "volume" | "idxWt">("symbol");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
 
-  useEffect(() => {
+  const load = useCallback(() => {
     fetchLDCPData()
       .then(setData)
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    load();
+    const onRefresh = () => load();
+    window.addEventListener("portfolio:refresh", onRefresh);
+    return () => window.removeEventListener("portfolio:refresh", onRefresh);
+  }, [load]);
 
   const handleSort = (col: typeof sortBy) => {
     if (sortBy === col) {
