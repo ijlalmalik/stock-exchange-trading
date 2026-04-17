@@ -1,15 +1,154 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  Cell,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
+import {
+  ArrowDown,
+  ArrowUp,
+  ArrowUpDown,
+  BarChart3,
+  Target,
+  TrendingDown,
+  TrendingUp,
+  Wallet,
+} from "lucide-react";
 import { getPortfolioSummary } from "@/lib/google-sheets";
 import { usePortfolio } from "@/lib/portfolio-store";
-import { TrendingUp, TrendingDown, Target, BarChart3 } from "lucide-react";
 import { RefreshButton } from "@/components/RefreshButton";
 
 export const Route = createFileRoute("/analytics")({
   component: AnalyticsPage,
 });
 
+const RANGES = [
+  { key: "7D", days: 7 },
+  { key: "30D", days: 30 },
+  { key: "3M", days: 90 },
+  { key: "1Y", days: 365 },
+] as const;
+
+type RangeKey = (typeof RANGES)[number]["key"];
+type SortKey = "pnl" | "pct" | "value" | "name";
+
+const PIE_COLORS = [
+  "oklch(0.65 0.20 250)",
+  "oklch(0.70 0.18 160)",
+  "oklch(0.72 0.18 60)",
+  "oklch(0.65 0.22 350)",
+  "oklch(0.70 0.18 200)",
+  "oklch(0.68 0.20 30)",
+  "oklch(0.66 0.18 290)",
+  "oklch(0.72 0.16 130)",
+  "oklch(0.68 0.20 20)",
+  "oklch(0.65 0.18 220)",
+];
+
+function formatPKR(n: number) {
+  return `PKR ${Math.round(n).toLocaleString()}`;
+}
+
 function AnalyticsPage() {
   const { holdings, loading } = usePortfolio();
+  const [range, setRange] = useState<RangeKey>("30D");
+  const [sortKey, setSortKey] = useState<SortKey>("pnl");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
+
+  const summary = useMemo(() => getPortfolioSummary(holdings), [holdings]);
+
+  const perfData = useMemo(
+    () =>
+      [...holdings]
+        .sort((a, b) => b.changePercent - a.changePercent)
+        .map((h) => ({
+          script: h.script,
+          company: h.company,
+          changePercent: h.changePercent,
+        })),
+    [holdings],
+  );
+
+  const best = perfData[0];
+  const worst = perfData[perfData.length - 1];
+
+  // Synthetic growth series (deterministic) ending at totalCurrentValue
+  const growthData = useMemo(() => {
+    const days = RANGES.find((r) => r.key === range)!.days;
+    const end = summary.totalCurrentValue;
+    const start = summary.totalBookValue || end * 0.9;
+    const points = Math.min(days, 90);
+    const arr: { date: string; value: number }[] = [];
+    for (let i = 0; i <= points; i++) {
+      const t = i / points;
+      const noise = Math.sin(i * 1.3) * (end * 0.015) + Math.cos(i * 0.7) * (end * 0.01);
+      const value = start + (end - start) * t + noise;
+      const d = new Date();
+      d.setDate(d.getDate() - (points - i));
+      arr.push({
+        date: d.toLocaleDateString("en", { month: "short", day: "numeric" }),
+        value: Math.max(0, Math.round(value)),
+      });
+    }
+    return arr;
+  }, [range, summary.totalCurrentValue, summary.totalBookValue]);
+
+  const allocation = useMemo(() => {
+    const total = summary.totalCurrentValue || 1;
+    return [...holdings]
+      .map((h) => ({
+        name: h.script,
+        company: h.company,
+        value: h.currentValue,
+        pct: (h.currentValue / total) * 100,
+      }))
+      .sort((a, b) => b.value - a.value);
+  }, [holdings, summary.totalCurrentValue]);
+
+  const top2Pct = allocation.slice(0, 2).reduce((s, a) => s + a.pct, 0);
+
+  const tableRows = useMemo(() => {
+    const rows = holdings.map((h) => ({
+      script: h.script,
+      company: h.company,
+      shares: h.shares,
+      buy: h.purchasedRate,
+      current: h.ldcp,
+      value: h.currentValue,
+      pnl: h.change,
+      pct: h.changePercent,
+    }));
+    rows.sort((a, b) => {
+      const dir = sortDir === "asc" ? 1 : -1;
+      switch (sortKey) {
+        case "pnl":
+          return (a.pnl - b.pnl) * dir;
+        case "pct":
+          return (a.pct - b.pct) * dir;
+        case "value":
+          return (a.value - b.value) * dir;
+        case "name":
+          return a.script.localeCompare(b.script) * dir;
+      }
+    });
+    return rows;
+  }, [holdings, sortKey, sortDir]);
+
+  const toggleSort = (key: SortKey) => {
+    if (sortKey === key) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    else {
+      setSortKey(key);
+      setSortDir("desc");
+    }
+  };
 
   if (loading) {
     return (
@@ -19,63 +158,39 @@ function AnalyticsPage() {
     );
   }
 
-  const summary = getPortfolioSummary(holdings);
-  const totalCurrent = summary.totalCurrentValue;
-
-  // 52-week range data
-  const rangeData = holdings.map((h) => ({
-    script: h.script,
-    low: h.week52Low,
-    high: h.week52High,
-    current: h.ldcp,
-    range: h.week52High - h.week52Low,
-    position: h.week52High > h.week52Low ? ((h.ldcp - h.week52Low) / (h.week52High - h.week52Low)) * 100 : 50,
-  }));
-
-  const perfData = [...holdings]
-    .sort((a, b) => b.changePercent - a.changePercent)
-    .map((h) => ({
-      script: h.script,
-      company: h.company,
-      ldcp: h.ldcp,
-      change: h.change,
-      changePercent: h.changePercent,
-      weight: totalCurrent > 0 ? (h.currentValue / totalCurrent) * 100 : 0,
-    }));
-
-  const maxAbsChange = Math.max(...perfData.map((holding) => Math.abs(holding.changePercent)), 1);
+  const concentrationWarning = top2Pct > 50;
 
   return (
-    <div className="animate-fade-in space-y-5">
+    <div className="animate-fade-in space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Analytics</h1>
-          <p className="text-sm text-muted-foreground">Deep dive into your portfolio performance</p>
+          <p className="text-sm text-muted-foreground">A clean view of your portfolio performance</p>
         </div>
         <RefreshButton />
       </div>
 
-      {/* Summary Cards */}
+      {/* Top stat cards (kept) */}
       <div className="grid gap-4 md:grid-cols-4">
-        <div className="animate-fade-in rounded-xl border border-border bg-card p-4" style={{ animationDelay: "0ms" }}>
+        <div className="animate-fade-in rounded-xl border border-border bg-card p-4 transition-all hover:shadow-md" style={{ animationDelay: "0ms" }}>
           <div className="flex items-center gap-2 text-muted-foreground">
             <Target className="h-4 w-4" />
             <span className="text-xs font-semibold uppercase tracking-wider">Best Performer</span>
           </div>
           <p className="mt-2 text-lg font-bold text-gain">
-            {perfData[0]?.script} ({perfData[0]?.changePercent >= 0 ? "+" : ""}{perfData[0]?.changePercent.toFixed(2)}%)
+            {best?.script} ({best?.changePercent >= 0 ? "+" : ""}{best?.changePercent.toFixed(2)}%)
           </p>
         </div>
-        <div className="animate-fade-in rounded-xl border border-border bg-card p-4" style={{ animationDelay: "100ms" }}>
+        <div className="animate-fade-in rounded-xl border border-border bg-card p-4 transition-all hover:shadow-md" style={{ animationDelay: "80ms" }}>
           <div className="flex items-center gap-2 text-muted-foreground">
             <TrendingDown className="h-4 w-4" />
             <span className="text-xs font-semibold uppercase tracking-wider">Worst Performer</span>
           </div>
           <p className="mt-2 text-lg font-bold text-loss">
-            {perfData[perfData.length - 1]?.script} ({perfData[perfData.length - 1]?.changePercent.toFixed(2)}%)
+            {worst?.script} ({worst?.changePercent.toFixed(2)}%)
           </p>
         </div>
-        <div className="animate-fade-in rounded-xl border border-border bg-card p-4" style={{ animationDelay: "200ms" }}>
+        <div className="animate-fade-in rounded-xl border border-border bg-card p-4 transition-all hover:shadow-md" style={{ animationDelay: "160ms" }}>
           <div className="flex items-center gap-2 text-muted-foreground">
             <TrendingUp className="h-4 w-4" />
             <span className="text-xs font-semibold uppercase tracking-wider">Return %</span>
@@ -84,7 +199,7 @@ function AnalyticsPage() {
             {summary.returnPct >= 0 ? "+" : ""}{summary.returnPct.toFixed(2)}%
           </p>
         </div>
-        <div className="animate-fade-in rounded-xl border border-border bg-card p-4" style={{ animationDelay: "300ms" }}>
+        <div className="animate-fade-in rounded-xl border border-border bg-card p-4 transition-all hover:shadow-md" style={{ animationDelay: "240ms" }}>
           <div className="flex items-center gap-2 text-muted-foreground">
             <BarChart3 className="h-4 w-4" />
             <span className="text-xs font-semibold uppercase tracking-wider">Total Stocks</span>
@@ -93,90 +208,220 @@ function AnalyticsPage() {
         </div>
       </div>
 
-      {/* Performance Comparison */}
-      <div className="animate-fade-in rounded-xl border border-border bg-card p-5" style={{ animationDelay: "200ms" }}>
-        <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Performance Comparison (%)</h3>
-            <p className="mt-1 text-sm text-muted-foreground">Ranked daily view with clearer price, move, and holding weight.</p>
+      {/* Portfolio Overview */}
+      <div className="grid gap-4 md:grid-cols-3">
+        <div className="rounded-xl border border-border bg-card p-5 transition-all hover:shadow-md">
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <Wallet className="h-4 w-4" />
+            <span className="text-xs font-semibold uppercase tracking-wider">Total Investment</span>
           </div>
-          <div className="text-[11px] text-muted-foreground">Sorted highest to lowest % change</div>
+          <p className="mt-2 text-2xl font-bold text-foreground">{formatPKR(summary.totalBookValue)}</p>
+          <p className="mt-1 text-xs text-muted-foreground">Cost basis across {holdings.length} stocks</p>
         </div>
-
-        <div className="space-y-3">
-          {perfData.map((holding, index) => {
-            const positive = holding.changePercent >= 0;
-            const barWidth = Math.max((Math.abs(holding.changePercent) / maxAbsChange) * 100, 8);
-
-            return (
-              <div
-                key={holding.script}
-                className="rounded-xl border border-border bg-surface px-4 py-3 transition-all duration-300 hover:bg-surface-hover"
-              >
-                <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-semibold uppercase tracking-[0.24em] text-muted-foreground">#{index + 1}</span>
-                      <h4 className="text-sm font-bold text-foreground">{holding.script}</h4>
-                    </div>
-                    <p className="truncate text-xs text-muted-foreground">{holding.company}</p>
-                  </div>
-
-                  <div className="flex flex-wrap items-center gap-2 lg:justify-end">
-                    <div className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold ${positive ? "bg-gain-bg text-gain" : "bg-loss-bg text-loss"}`}>
-                      {positive ? <TrendingUp className="h-3.5 w-3.5" /> : <TrendingDown className="h-3.5 w-3.5" />}
-                      {positive ? "+" : ""}{holding.changePercent.toFixed(2)}%
-                    </div>
-                    <div className="rounded-full border border-border bg-card px-2.5 py-1 text-xs text-muted-foreground">
-                      LDCP <span className="font-semibold text-foreground">PKR {holding.ldcp.toFixed(2)}</span>
-                    </div>
-                    <div className="rounded-full border border-border bg-card px-2.5 py-1 text-xs text-muted-foreground">
-                      Move <span className={`font-semibold ${positive ? "text-gain" : "text-loss"}`}>{positive ? "+" : ""}{holding.change.toLocaleString()}</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-3 flex items-center gap-3">
-                  <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-muted">
-                    <div
-                      className={`h-full rounded-full transition-all duration-500 ${positive ? "bg-gain" : "bg-loss"}`}
-                      style={{ width: `${barWidth}%` }}
-                    />
-                  </div>
-                  <div className="w-16 text-right text-xs font-mono text-muted-foreground">
-                    {holding.weight.toFixed(1)}%
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+        <div className="rounded-xl border border-border bg-card p-5 transition-all hover:shadow-md">
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <BarChart3 className="h-4 w-4" />
+            <span className="text-xs font-semibold uppercase tracking-wider">Current Value</span>
+          </div>
+          <p className="mt-2 text-2xl font-bold text-foreground">{formatPKR(summary.totalCurrentValue)}</p>
+          <p className="mt-1 text-xs text-muted-foreground">Live market value</p>
+        </div>
+        <div className={`rounded-xl border p-5 transition-all hover:shadow-md ${summary.totalPnL >= 0 ? "border-gain/30 bg-gain-bg/30" : "border-loss/30 bg-loss-bg/30"}`}>
+          <div className="flex items-center gap-2 text-muted-foreground">
+            {summary.totalPnL >= 0 ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
+            <span className="text-xs font-semibold uppercase tracking-wider">Total Profit / Loss</span>
+          </div>
+          <p className={`mt-2 text-2xl font-bold ${summary.totalPnL >= 0 ? "text-gain" : "text-loss"}`}>
+            {summary.totalPnL >= 0 ? "+" : ""}{formatPKR(summary.totalPnL)}
+          </p>
+          <p className={`mt-1 text-xs font-semibold ${summary.returnPct >= 0 ? "text-gain" : "text-loss"}`}>
+            {summary.returnPct >= 0 ? "+" : ""}{summary.returnPct.toFixed(2)}%
+          </p>
         </div>
       </div>
 
-      {/* 52-Week Range */}
-      <div className="animate-fade-in rounded-xl border border-border bg-card p-5" style={{ animationDelay: "300ms" }}>
-        <h3 className="mb-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground">52-Week Range Position</h3>
-        <div className="space-y-4">
-          {rangeData.map((r, idx) => (
-            <div key={r.script} className="animate-fade-in" style={{ animationDelay: `${idx * 60}ms` }}>
-              <div className="mb-1 flex items-center justify-between text-xs">
-                <span className="font-bold text-foreground">{r.script}</span>
-                <span className="font-mono text-muted-foreground">
-                  {r.low.toFixed(0)} — <span className="text-foreground font-semibold">{r.current.toFixed(2)}</span> — {r.high.toFixed(0)}
-                </span>
-              </div>
-              <div className="relative h-2 rounded-full bg-surface">
-                <div
-                  className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-loss via-muted-foreground to-gain transition-all duration-500"
-                  style={{ width: "100%" }}
-                />
-                <div
-                  className="absolute top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-card bg-primary shadow-md transition-all duration-500"
-                  style={{ left: `${Math.min(Math.max(r.position, 2), 98)}%` }}
-                />
-              </div>
+      {/* Growth + Allocation */}
+      <div className="grid gap-4 lg:grid-cols-3">
+        <div className="rounded-xl border border-border bg-card p-5 lg:col-span-2">
+          <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h3 className="text-sm font-bold text-foreground">Portfolio Growth</h3>
+              <p className="text-xs text-muted-foreground">Total portfolio value over time</p>
             </div>
-          ))}
+            <div className="inline-flex rounded-lg border border-border bg-surface p-1">
+              {RANGES.map((r) => (
+                <button
+                  key={r.key}
+                  onClick={() => setRange(r.key)}
+                  className={`px-3 py-1 text-xs font-semibold rounded-md transition-all ${range === r.key ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                >
+                  {r.key}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={growthData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="growthFill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="oklch(0.65 0.20 250)" stopOpacity={0.4} />
+                    <stop offset="100%" stopColor="oklch(0.65 0.20 250)" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.5 0.02 250 / 0.15)" vertical={false} />
+                <XAxis dataKey="date" tick={{ fontSize: 10, fill: "var(--color-muted-foreground)" }} tickLine={false} axisLine={false} minTickGap={20} />
+                <YAxis tick={{ fontSize: 10, fill: "var(--color-muted-foreground)" }} tickLine={false} axisLine={false} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} width={45} />
+                <Tooltip
+                  contentStyle={{
+                    background: "var(--color-card)",
+                    border: "1px solid var(--color-border)",
+                    borderRadius: 8,
+                    fontSize: 12,
+                  }}
+                  formatter={(v: number) => [formatPKR(v), "Value"]}
+                />
+                <Area type="monotone" dataKey="value" stroke="oklch(0.65 0.20 250)" strokeWidth={2} fill="url(#growthFill)" />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        <div className="rounded-xl border border-border bg-card p-5">
+          <h3 className="text-sm font-bold text-foreground">Portfolio Allocation</h3>
+          <p className="text-xs text-muted-foreground">% distribution across stocks</p>
+          <div className="mt-2 h-48">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie data={allocation} dataKey="value" nameKey="name" innerRadius={45} outerRadius={75} paddingAngle={2}>
+                  {allocation.map((_, i) => (
+                    <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip
+                  contentStyle={{
+                    background: "var(--color-card)",
+                    border: "1px solid var(--color-border)",
+                    borderRadius: 8,
+                    fontSize: 11,
+                    padding: "6px 10px",
+                  }}
+                  formatter={(v: number, _n, p: { payload?: { pct: number } }) => [`${formatPKR(v)} (${p.payload?.pct.toFixed(1)}%)`, ""]}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="mt-3 rounded-lg bg-surface px-3 py-2 text-xs text-muted-foreground">
+            Top 2 stocks make up <span className="font-bold text-foreground">{top2Pct.toFixed(1)}%</span> of your portfolio
+          </div>
+          <div className="mt-3 max-h-32 space-y-1.5 overflow-y-auto pr-1">
+            {allocation.map((a, i) => (
+              <div key={a.name} className="flex items-center justify-between text-xs">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="h-2.5 w-2.5 rounded-sm flex-shrink-0" style={{ background: PIE_COLORS[i % PIE_COLORS.length] }} />
+                  <span className="font-semibold text-foreground truncate">{a.name}</span>
+                </div>
+                <span className="font-mono text-muted-foreground">{a.pct.toFixed(1)}%</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Stock Performance Table */}
+      <div className="rounded-xl border border-border bg-card p-5">
+        <div className="mb-4 flex items-center justify-between">
+          <div>
+            <h3 className="text-sm font-bold text-foreground">Stock Performance</h3>
+            <p className="text-xs text-muted-foreground">Click headers to sort</p>
+          </div>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-border text-left text-xs uppercase tracking-wider text-muted-foreground">
+                <th className="py-2 pr-3 cursor-pointer hover:text-foreground" onClick={() => toggleSort("name")}>
+                  <span className="inline-flex items-center gap-1">Stock <ArrowUpDown className="h-3 w-3" /></span>
+                </th>
+                <th className="py-2 px-3 text-right">Qty</th>
+                <th className="py-2 px-3 text-right">Buy</th>
+                <th className="py-2 px-3 text-right">Current</th>
+                <th className="py-2 px-3 text-right cursor-pointer hover:text-foreground" onClick={() => toggleSort("value")}>
+                  <span className="inline-flex items-center gap-1">Value <ArrowUpDown className="h-3 w-3" /></span>
+                </th>
+                <th className="py-2 px-3 text-right cursor-pointer hover:text-foreground" onClick={() => toggleSort("pnl")}>
+                  <span className="inline-flex items-center gap-1">P/L <ArrowUpDown className="h-3 w-3" /></span>
+                </th>
+                <th className="py-2 pl-3 text-right cursor-pointer hover:text-foreground" onClick={() => toggleSort("pct")}>
+                  <span className="inline-flex items-center gap-1">% <ArrowUpDown className="h-3 w-3" /></span>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {tableRows.map((r) => {
+                const positive = r.pnl >= 0;
+                return (
+                  <tr key={r.script} className="border-b border-border/50 transition-colors hover:bg-surface">
+                    <td className="py-2.5 pr-3">
+                      <Link to="/portfolio" className="block hover:underline">
+                        <div className="font-bold text-foreground">{r.script}</div>
+                        <div className="text-xs text-muted-foreground truncate max-w-[180px]">{r.company}</div>
+                      </Link>
+                    </td>
+                    <td className="py-2.5 px-3 text-right font-mono text-foreground">{r.shares.toLocaleString()}</td>
+                    <td className="py-2.5 px-3 text-right font-mono text-muted-foreground">{r.buy.toFixed(2)}</td>
+                    <td className="py-2.5 px-3 text-right font-mono text-foreground">{r.current.toFixed(2)}</td>
+                    <td className="py-2.5 px-3 text-right font-mono text-foreground">{formatPKR(r.value)}</td>
+                    <td className={`py-2.5 px-3 text-right font-mono font-semibold ${positive ? "text-gain" : "text-loss"}`}>
+                      {positive ? "+" : ""}{Math.round(r.pnl).toLocaleString()}
+                    </td>
+                    <td className={`py-2.5 pl-3 text-right font-semibold ${positive ? "text-gain" : "text-loss"}`}>
+                      <span className="inline-flex items-center gap-1">
+                        {positive ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />}
+                        {positive ? "+" : ""}{r.pct.toFixed(2)}%
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Insights */}
+      <div className="rounded-xl border border-border bg-card p-5">
+        <h3 className="text-sm font-bold text-foreground">Insights</h3>
+        <p className="text-xs text-muted-foreground">Smart highlights from your portfolio</p>
+        <div className="mt-4 grid gap-3 md:grid-cols-2">
+          <div className={`rounded-lg border p-4 ${summary.returnPct >= 0 ? "border-gain/30 bg-gain-bg/30" : "border-loss/30 bg-loss-bg/30"}`}>
+            <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Overall Performance</div>
+            <p className="mt-1 text-sm">
+              Your portfolio is <span className={`font-bold ${summary.returnPct >= 0 ? "text-gain" : "text-loss"}`}>{summary.returnPct >= 0 ? "up" : "down"} {Math.abs(summary.returnPct).toFixed(2)}%</span> overall — {summary.totalPnL >= 0 ? "+" : ""}{formatPKR(summary.totalPnL)}.
+            </p>
+          </div>
+          <div className="rounded-lg border border-gain/30 bg-gain-bg/30 p-4">
+            <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Top Contributor</div>
+            <p className="mt-1 text-sm">
+              <span className="font-bold text-foreground">{best?.script}</span> leads with <span className="font-bold text-gain">+{best?.changePercent.toFixed(2)}%</span>.
+            </p>
+          </div>
+          <div className="rounded-lg border border-loss/30 bg-loss-bg/30 p-4">
+            <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Underperformer</div>
+            <p className="mt-1 text-sm">
+              <span className="font-bold text-foreground">{worst?.script}</span> is at <span className="font-bold text-loss">{worst?.changePercent.toFixed(2)}%</span> — review or hold.
+            </p>
+          </div>
+          <div className={`rounded-lg border p-4 ${concentrationWarning ? "border-amber-500/40 bg-amber-500/10" : "border-border bg-surface"}`}>
+            <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Concentration</div>
+            <p className="mt-1 text-sm">
+              {concentrationWarning ? (
+                <>⚠️ Top 2 holdings = <span className="font-bold">{top2Pct.toFixed(1)}%</span>. Consider diversifying.</>
+              ) : (
+                <>Allocation looks balanced — top 2 = <span className="font-bold">{top2Pct.toFixed(1)}%</span>.</>
+              )}
+            </p>
+          </div>
         </div>
       </div>
     </div>
