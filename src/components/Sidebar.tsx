@@ -1,5 +1,5 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { LayoutDashboard, Briefcase, BarChart3, Radio, Sun, Moon, Coffee, FileSpreadsheet, X } from "lucide-react";
+import { LayoutDashboard, Briefcase, BarChart3, Radio, Sun, Moon, Sparkles, FileSpreadsheet, X } from "lucide-react";
 import { useTheme, type Theme } from "@/lib/theme";
 import { useViewMode } from "@/lib/view-mode";
 
@@ -14,7 +14,7 @@ const NAV = [
 const THEMES: { id: Theme; icon: typeof Sun; label: string }[] = [
   { id: "dark", icon: Moon, label: "Dark" },
   { id: "light", icon: Sun, label: "Light" },
-  { id: "sepia", icon: Coffee, label: "Sepia" },
+  { id: "sepia", icon: Sparkles, label: "Glass" },
 ];
 
 interface SidebarProps {
