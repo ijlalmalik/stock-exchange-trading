@@ -1,6 +1,7 @@
 import { Link, useLocation } from "@tanstack/react-router";
 import { LayoutDashboard, Briefcase, BarChart3, Radio, Sun, Moon, Coffee, FileSpreadsheet, X } from "lucide-react";
 import { useTheme, type Theme } from "@/lib/theme";
+import { useViewMode } from "@/lib/view-mode";
 
 const NAV = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -24,18 +25,24 @@ interface SidebarProps {
 export function Sidebar({ open, onClose }: SidebarProps) {
   const location = useLocation();
   const { theme, setTheme } = useTheme();
+  const { mode } = useViewMode();
+  const forceMobile = mode === "mobile";
+
+  // In forceMobile, sidebar always behaves like mobile drawer (no auto-open on lg)
+  const desktopOpenClass = forceMobile ? "" : "lg:translate-x-0";
+  const backdropHide = forceMobile ? "" : "lg:hidden";
 
   return (
     <>
-      {/* Mobile backdrop */}
+      {/* Backdrop */}
       <div
         onClick={onClose}
-        className={`fixed inset-0 z-40 bg-black/50 backdrop-blur-sm transition-opacity duration-300 lg:hidden ${
+        className={`fixed inset-0 z-40 bg-black/50 backdrop-blur-sm transition-opacity duration-300 ${backdropHide} ${
           open ? "opacity-100" : "pointer-events-none opacity-0"
         }`}
       />
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex w-56 flex-col border-r border-border bg-sidebar/90 backdrop-blur-xl transition-transform duration-300 lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 flex w-56 flex-col border-r border-border bg-sidebar/90 backdrop-blur-xl transition-transform duration-300 ${desktopOpenClass} ${
           open ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -49,7 +56,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
           </div>
           <button
             onClick={onClose}
-            className="rounded-lg p-1.5 text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground lg:hidden"
+            className={`rounded-lg p-1.5 text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground ${forceMobile ? "" : "lg:hidden"}`}
             aria-label="Close menu"
           >
             <X className="h-4 w-4" />
