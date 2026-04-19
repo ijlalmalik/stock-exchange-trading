@@ -9,11 +9,17 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SheetRouteImport } from './routes/sheet'
 import { Route as PortfolioRouteImport } from './routes/portfolio'
 import { Route as LdcpRouteImport } from './routes/ldcp'
 import { Route as AnalyticsRouteImport } from './routes/analytics'
 import { Route as IndexRouteImport } from './routes/index'
 
+const SheetRoute = SheetRouteImport.update({
+  id: '/sheet',
+  path: '/sheet',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PortfolioRoute = PortfolioRouteImport.update({
   id: '/portfolio',
   path: '/portfolio',
@@ -40,12 +46,14 @@ export interface FileRoutesByFullPath {
   '/analytics': typeof AnalyticsRoute
   '/ldcp': typeof LdcpRoute
   '/portfolio': typeof PortfolioRoute
+  '/sheet': typeof SheetRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/analytics': typeof AnalyticsRoute
   '/ldcp': typeof LdcpRoute
   '/portfolio': typeof PortfolioRoute
+  '/sheet': typeof SheetRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -53,13 +61,14 @@ export interface FileRoutesById {
   '/analytics': typeof AnalyticsRoute
   '/ldcp': typeof LdcpRoute
   '/portfolio': typeof PortfolioRoute
+  '/sheet': typeof SheetRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/analytics' | '/ldcp' | '/portfolio'
+  fullPaths: '/' | '/analytics' | '/ldcp' | '/portfolio' | '/sheet'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/analytics' | '/ldcp' | '/portfolio'
-  id: '__root__' | '/' | '/analytics' | '/ldcp' | '/portfolio'
+  to: '/' | '/analytics' | '/ldcp' | '/portfolio' | '/sheet'
+  id: '__root__' | '/' | '/analytics' | '/ldcp' | '/portfolio' | '/sheet'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -67,10 +76,18 @@ export interface RootRouteChildren {
   AnalyticsRoute: typeof AnalyticsRoute
   LdcpRoute: typeof LdcpRoute
   PortfolioRoute: typeof PortfolioRoute
+  SheetRoute: typeof SheetRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sheet': {
+      id: '/sheet'
+      path: '/sheet'
+      fullPath: '/sheet'
+      preLoaderRoute: typeof SheetRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/portfolio': {
       id: '/portfolio'
       path: '/portfolio'
@@ -107,6 +124,7 @@ const rootRouteChildren: RootRouteChildren = {
   AnalyticsRoute: AnalyticsRoute,
   LdcpRoute: LdcpRoute,
   PortfolioRoute: PortfolioRoute,
+  SheetRoute: SheetRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
