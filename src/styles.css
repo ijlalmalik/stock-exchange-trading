@@ -147,6 +147,52 @@
   --sidebar-ring: oklch(0.6 0.18 250);
 }
 
+/* Sepia theme — warm light brown, grey & white */
+.sepia {
+  --background: oklch(0.96 0.015 75);
+  --foreground: oklch(0.25 0.025 50);
+  --card: oklch(0.99 0.008 80);
+  --card-foreground: oklch(0.25 0.025 50);
+  --popover: oklch(0.99 0.008 80);
+  --popover-foreground: oklch(0.25 0.025 50);
+  --primary: oklch(0.5 0.08 55);
+  --primary-foreground: oklch(0.98 0.01 80);
+  --secondary: oklch(0.92 0.018 75);
+  --secondary-foreground: oklch(0.3 0.03 55);
+  --muted: oklch(0.92 0.015 75);
+  --muted-foreground: oklch(0.5 0.02 60);
+  --accent: oklch(0.89 0.025 70);
+  --accent-foreground: oklch(0.3 0.03 55);
+  --destructive: oklch(0.55 0.18 30);
+  --destructive-foreground: oklch(0.98 0 0);
+  --border: oklch(0.85 0.02 70);
+  --input: oklch(0.88 0.02 70);
+  --ring: oklch(0.5 0.08 55);
+
+  --gain: oklch(0.5 0.14 150);
+  --loss: oklch(0.55 0.2 30);
+  --gain-bg: oklch(0.93 0.04 150);
+  --loss-bg: oklch(0.93 0.04 30);
+  --surface: oklch(0.94 0.018 75);
+  --surface-hover: oklch(0.9 0.025 70);
+  --ticker-bg: oklch(0.9 0.025 70);
+  --chart-label: oklch(0.99 0.005 80);
+
+  --chart-1: oklch(0.5 0.1 55);
+  --chart-2: oklch(0.55 0.08 140);
+  --chart-3: oklch(0.6 0.12 40);
+  --chart-4: oklch(0.45 0.06 280);
+  --chart-5: oklch(0.55 0.15 25);
+  --sidebar: oklch(0.94 0.02 75);
+  --sidebar-foreground: oklch(0.25 0.025 50);
+  --sidebar-primary: oklch(0.5 0.08 55);
+  --sidebar-primary-foreground: oklch(0.98 0.01 80);
+  --sidebar-accent: oklch(0.89 0.025 70);
+  --sidebar-accent-foreground: oklch(0.3 0.03 55);
+  --sidebar-border: oklch(0.85 0.02 70);
+  --sidebar-ring: oklch(0.5 0.08 55);
+}
+
 @layer base {
   * {
     border-color: var(--color-border);
@@ -181,6 +227,44 @@
 }
 .animate-fade-in {
   animation: fadeIn 0.5s ease-out both;
+}
+
+@keyframes fadeInScale {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+.animate-fade-scale {
+  animation: fadeInScale 0.4s ease-out both;
+}
+
+/* Glass effect — adapts per theme */
+.glass {
+  background: color-mix(in oklab, var(--color-card) 55%, transparent);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid color-mix(in oklab, var(--color-foreground) 10%, transparent);
+  box-shadow:
+    0 1px 0 0 color-mix(in oklab, var(--color-foreground) 6%, transparent) inset,
+    0 8px 32px -8px color-mix(in oklab, var(--color-foreground) 18%, transparent);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+}
+.glass:hover {
+  background: color-mix(in oklab, var(--color-card) 70%, transparent);
+  box-shadow:
+    0 1px 0 0 color-mix(in oklab, var(--color-foreground) 8%, transparent) inset,
+    0 12px 40px -8px color-mix(in oklab, var(--color-primary) 25%, transparent);
+}
+.glass-strong {
+  background: color-mix(in oklab, var(--color-card) 75%, transparent);
+  backdrop-filter: blur(22px) saturate(160%);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
+  border: 1px solid color-mix(in oklab, var(--color-foreground) 14%, transparent);
+}
+.glass-hover-lift {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.glass-hover-lift:hover {
+  transform: translateY(-2px);
 }
 
 .recharts-tooltip-wrapper .recharts-default-tooltip {
