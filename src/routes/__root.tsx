@@ -1,7 +1,10 @@
 import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
+import { useState } from "react";
 import appCss from "../styles.css?url";
 import { Sidebar } from "@/components/Sidebar";
+import { MobileHeader, ViewModeFloating } from "@/components/MobileHeader";
 import { ThemeProvider } from "@/lib/theme";
+import { ViewModeProvider, useViewMode } from "@/lib/view-mode";
 import { PortfolioProvider } from "@/lib/portfolio-store";
 
 function NotFoundComponent() {
@@ -65,14 +68,32 @@ function RootShell({ children }: { children: React.ReactNode }) {
 function RootComponent() {
   return (
     <ThemeProvider>
-      <PortfolioProvider>
-        <div className="flex min-h-screen">
-          <Sidebar />
-          <main className="ml-56 flex-1 p-6">
-            <Outlet />
-          </main>
-        </div>
-      </PortfolioProvider>
+      <ViewModeProvider>
+        <PortfolioProvider>
+          <AppShell />
+        </PortfolioProvider>
+      </ViewModeProvider>
     </ThemeProvider>
+  );
+}
+
+function AppShell() {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { mode } = useViewMode();
+  const forceMobile = mode === "mobile";
+
+  return (
+    <div className={`flex min-h-screen ${forceMobile ? "mx-auto max-w-[430px] border-x border-border shadow-2xl" : ""}`}>
+      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <div className={`flex flex-1 flex-col min-w-0 ${forceMobile ? "" : "lg:ml-56"}`}>
+        <div className={forceMobile ? "" : "lg:hidden"}>
+          <MobileHeader onMenuClick={() => setSidebarOpen(true)} />
+        </div>
+        <main className="flex-1 p-4 sm:p-5 lg:p-6">
+          <Outlet />
+        </main>
+      </div>
+      <ViewModeFloating />
+    </div>
   );
 }
