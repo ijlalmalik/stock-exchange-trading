@@ -1,5 +1,6 @@
 import { Menu, Smartphone, Monitor } from "lucide-react";
 import { useViewMode } from "@/lib/view-mode";
+import { SettingsPanel } from "@/components/SettingsPanel";
 
 interface MobileHeaderProps {
   onMenuClick: () => void;
@@ -22,13 +23,17 @@ export function MobileHeader({ onMenuClick }: MobileHeaderProps) {
         <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary text-primary-foreground text-xs font-bold">I</div>
         <span className="text-sm font-bold text-foreground">Portfolio</span>
       </div>
-      <button
-        onClick={toggleMode}
-        title={mode === "mobile" ? "Switch to desktop view" : "Switch to mobile view"}
-        className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-surface px-2.5 py-2 text-xs font-medium text-foreground transition-all hover:bg-surface-hover hover:border-primary/40"
-      >
-        {mode === "mobile" ? <Monitor className="h-4 w-4 text-primary" /> : <Smartphone className="h-4 w-4 text-primary" />}
-      </button>
+      <div className="flex items-center gap-1.5">
+        <SettingsPanel variant="icon" />
+        <button
+          onClick={toggleMode}
+          title={mode === "mobile" ? "Switch to desktop view" : "Switch to mobile view"}
+          className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-surface text-foreground transition-all hover:bg-surface-hover hover:border-primary/40"
+          aria-label="Toggle view mode"
+        >
+          {mode === "mobile" ? <Monitor className="h-4 w-4 text-primary" /> : <Smartphone className="h-4 w-4 text-primary" />}
+        </button>
+      </div>
     </header>
   );
 }

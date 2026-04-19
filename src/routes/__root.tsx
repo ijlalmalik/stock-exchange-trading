@@ -6,6 +6,7 @@ import { MobileHeader, ViewModeFloating } from "@/components/MobileHeader";
 import { ThemeProvider } from "@/lib/theme";
 import { ViewModeProvider, useViewMode } from "@/lib/view-mode";
 import { PortfolioProvider } from "@/lib/portfolio-store";
+import { CustomizationProvider } from "@/lib/customization";
 
 function NotFoundComponent() {
   return (
@@ -68,11 +69,13 @@ function RootShell({ children }: { children: React.ReactNode }) {
 function RootComponent() {
   return (
     <ThemeProvider>
-      <ViewModeProvider>
-        <PortfolioProvider>
-          <AppShell />
-        </PortfolioProvider>
-      </ViewModeProvider>
+      <CustomizationProvider>
+        <ViewModeProvider>
+          <PortfolioProvider>
+            <AppShell />
+          </PortfolioProvider>
+        </ViewModeProvider>
+      </CustomizationProvider>
     </ThemeProvider>
   );
 }

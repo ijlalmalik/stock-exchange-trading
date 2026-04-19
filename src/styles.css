@@ -383,3 +383,122 @@
   border-radius: var(--radius) !important;
   box-shadow: 0 4px 20px oklch(0 0 0 / 0.15) !important;
 }
+
+/* ===========================================================
+   Customization layer — controlled by <html data-*> attributes
+   and the CSS vars set by CustomizationProvider.
+   Works across Dark, Light and Glass themes.
+=========================================================== */
+
+/* Accent hue shifts the primary color while keeping its lightness/chroma */
+:root[style*="--c-accent-hue"] {
+  --primary: oklch(0.6 0.18 var(--c-accent-hue));
+  --ring: oklch(0.6 0.18 var(--c-accent-hue));
+  --sidebar-primary: oklch(0.6 0.18 var(--c-accent-hue));
+  --sidebar-ring: oklch(0.6 0.18 var(--c-accent-hue));
+}
+.sepia:root[style*="--c-accent-hue"] {
+  --primary: oklch(0.62 0.2 var(--c-accent-hue));
+  --ring: oklch(0.62 0.2 var(--c-accent-hue));
+  --sidebar-primary: oklch(0.62 0.2 var(--c-accent-hue));
+}
+
+/* Glass blur + opacity sliders affect the Glass theme surfaces */
+.sepia .glass,
+.sepia [class*="bg-card"],
+.sepia [class*="bg-surface"],
+.sepia [class*="bg-popover"],
+.sepia [class*="bg-secondary"],
+.sepia [class*="bg-muted"],
+.sepia [class*="bg-accent"],
+.sepia [class*="bg-sidebar"],
+.sepia [class*="bg-background"] {
+  background-color: color-mix(in oklab, white var(--c-glass-opacity, 55%), transparent) !important;
+  backdrop-filter: blur(var(--c-glass-blur, 28px)) saturate(180%);
+  -webkit-backdrop-filter: blur(var(--c-glass-blur, 28px)) saturate(180%);
+}
+
+/* ---------- Button styles (apply to every theme) ---------- */
+:root[data-button-style="pill"] button:not([data-no-glass]) {
+  border-radius: 9999px !important;
+}
+:root[data-button-style="square"] button:not([data-no-glass]) {
+  border-radius: 4px !important;
+}
+:root[data-button-style="glass"] button:not([data-no-glass]):not([class*="bg-primary"]):not([class*="bg-destructive"]) {
+  background-color: color-mix(in oklab, var(--color-card) 45%, transparent) !important;
+  backdrop-filter: blur(var(--c-glass-blur, 18px)) saturate(170%);
+  -webkit-backdrop-filter: blur(var(--c-glass-blur, 18px)) saturate(170%);
+  border: 1px solid color-mix(in oklab, var(--color-foreground) 12%, transparent) !important;
+  box-shadow:
+    inset 0 1px 0 0 color-mix(in oklab, white 25%, transparent),
+    0 4px 14px -4px color-mix(in oklab, var(--color-foreground) 18%, transparent);
+}
+:root[data-button-style="glass"] button:not([data-no-glass]):not([class*="bg-primary"]):not([class*="bg-destructive"]):hover {
+  background-color: color-mix(in oklab, var(--color-card) 65%, transparent) !important;
+  transform: translateY(-1px);
+}
+
+/* ---------- Tab styles (apply to every theme) ---------- */
+:root[data-tab-style="pill"] [role="tablist"] {
+  border-radius: 9999px !important;
+  padding: 4px;
+}
+:root[data-tab-style="pill"] [role="tab"] {
+  border-radius: 9999px !important;
+}
+:root[data-tab-style="underline"] [role="tablist"] {
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 1px solid var(--color-border) !important;
+  border-radius: 0 !important;
+  padding: 0;
+  gap: 4px;
+}
+:root[data-tab-style="underline"] [role="tab"] {
+  background: transparent !important;
+  border-radius: 0 !important;
+  border-bottom: 2px solid transparent !important;
+  box-shadow: none !important;
+}
+:root[data-tab-style="underline"] [role="tab"][data-state="active"] {
+  background: transparent !important;
+  border-bottom-color: var(--color-primary) !important;
+  color: var(--color-primary) !important;
+}
+:root[data-tab-style="glass"] [role="tablist"] {
+  background-color: color-mix(in oklab, var(--color-card) 40%, transparent) !important;
+  backdrop-filter: blur(var(--c-glass-blur, 22px)) saturate(180%);
+  -webkit-backdrop-filter: blur(var(--c-glass-blur, 22px)) saturate(180%);
+  border: 1px solid color-mix(in oklab, var(--color-foreground) 10%, transparent) !important;
+  border-radius: 9999px !important;
+  padding: 4px;
+}
+:root[data-tab-style="glass"] [role="tab"][data-state="active"] {
+  background: color-mix(in oklab, var(--color-card) 80%, transparent) !important;
+  border-radius: 9999px !important;
+  box-shadow:
+    inset 0 1px 0 0 color-mix(in oklab, white 30%, transparent),
+    0 4px 12px -4px color-mix(in oklab, var(--color-primary) 30%, transparent);
+}
+
+/* ---------- Density ---------- */
+:root[data-density="compact"] main { padding: 0.75rem !important; }
+:root[data-density="compact"] button:not([data-no-glass]),
+:root[data-density="compact"] [role="tab"] {
+  padding-top: var(--c-density-y, 0.35rem) !important;
+  padding-bottom: var(--c-density-y, 0.35rem) !important;
+}
+:root[data-density="comfortable"] button:not([data-no-glass]),
+:root[data-density="comfortable"] [role="tab"] {
+  padding-top: var(--c-density-y, 0.75rem) !important;
+  padding-bottom: var(--c-density-y, 0.75rem) !important;
+}
+
+/* ---------- Reduced motion ---------- */
+:root[data-reduced-motion="true"] *,
+:root[data-reduced-motion="true"] *::before,
+:root[data-reduced-motion="true"] *::after {
+  animation-duration: 0.001ms !important;
+  transition-duration: 0.001ms !important;
+}

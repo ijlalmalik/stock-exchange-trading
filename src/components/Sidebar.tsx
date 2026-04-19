@@ -2,6 +2,7 @@ import { Link, useLocation } from "@tanstack/react-router";
 import { LayoutDashboard, Briefcase, BarChart3, Radio, Sun, Moon, Sparkles, FileSpreadsheet, X } from "lucide-react";
 import { useTheme, type Theme } from "@/lib/theme";
 import { useViewMode } from "@/lib/view-mode";
+import { SettingsPanel } from "@/components/SettingsPanel";
 
 const NAV = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -103,6 +104,9 @@ export function Sidebar({ open, onClose }: SidebarProps) {
                 </button>
               );
             })}
+          </div>
+          <div className="mt-3">
+            <SettingsPanel variant="full" className="w-full justify-center" />
           </div>
         </div>
       </aside>
