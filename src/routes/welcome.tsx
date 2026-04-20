@@ -1,7 +1,8 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from "framer-motion";
 import { useEffect, useState, useMemo, useRef } from "react";
 import { TrendingUp, ArrowRight, Sparkles } from "lucide-react";
+import bullImg from "@/assets/bull-hero.png";
 
 export const Route = createFileRoute("/welcome")({
   component: WelcomeScreen,
@@ -13,9 +14,15 @@ const TAGLINES = [
   "Precision. Power. Profit.",
 ];
 
+// Animation phase timeline (ms)
+const T_BOOT = 900;
+const T_RUN = 900; // bull runs in
+const T_STOMP = 350; // stomp impact
+const T_REVEAL = 600; // UI fades up after stomp
+
 function WelcomeScreen() {
   const navigate = useNavigate();
-  const [booting, setBooting] = useState(true);
+  const [phase, setPhase] = useState<"boot" | "run" | "stomp" | "ui">("boot");
   const [tagline] = useState(() => TAGLINES[Math.floor(Math.random() * TAGLINES.length)]);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -24,16 +31,22 @@ function WelcomeScreen() {
   const my = useMotionValue(0);
   const sx = useSpring(mx, { stiffness: 60, damping: 20 });
   const sy = useSpring(my, { stiffness: 60, damping: 20 });
-  const logoX = useTransform(sx, (v) => v * 18);
-  const logoY = useTransform(sy, (v) => v * 18);
+  const heroX = useTransform(sx, (v) => v * 12);
+  const heroY = useTransform(sy, (v) => v * 12);
   const blob1X = useTransform(sx, (v) => v * -40);
   const blob1Y = useTransform(sy, (v) => v * -40);
   const blob2X = useTransform(sx, (v) => v * 30);
   const blob2Y = useTransform(sy, (v) => v * 30);
 
   useEffect(() => {
-    const t = setTimeout(() => setBooting(false), 1600);
-    return () => clearTimeout(t);
+    const t1 = setTimeout(() => setPhase("run"), T_BOOT);
+    const t2 = setTimeout(() => setPhase("stomp"), T_BOOT + T_RUN);
+    const t3 = setTimeout(() => setPhase("ui"), T_BOOT + T_RUN + T_STOMP);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+    };
   }, []);
 
   const handleMouseMove = (e: React.MouseEvent) => {
@@ -50,18 +63,52 @@ function WelcomeScreen() {
     navigate({ to: "/" });
   };
 
-  // Faint floating tickers
   const tickers = useMemo(
     () => [
-      { sym: "AAPL", val: "+2.41%", top: "12%", left: "8%", delay: 0 },
-      { sym: "TSLA", val: "+5.10%", top: "22%", left: "82%", delay: 0.6 },
-      { sym: "NVDA", val: "+3.88%", top: "70%", left: "10%", delay: 1.2 },
-      { sym: "MSFT", val: "+1.22%", top: "78%", left: "84%", delay: 0.3 },
-      { sym: "KSE100", val: "+0.94%", top: "44%", left: "4%", delay: 0.9 },
-      { sym: "BTC", val: "+4.07%", top: "55%", left: "90%", delay: 1.5 },
+      { sym: "KSE100", val: "+0.94%", top: "12%", left: "8%", delay: 0 },
+      { sym: "OGDC", val: "+2.41%", top: "22%", left: "82%", delay: 0.6 },
+      { sym: "LUCK", val: "+5.10%", top: "70%", left: "10%", delay: 1.2 },
+      { sym: "ENGRO", val: "+1.22%", top: "78%", left: "84%", delay: 0.3 },
+      { sym: "HBL", val: "+0.74%", top: "44%", left: "4%", delay: 0.9 },
+      { sym: "PSO", val: "+4.07%", top: "55%", left: "90%", delay: 1.5 },
     ],
     [],
   );
+
+  // Pre-compute dust particles
+  const dustParticles = useMemo(
+    () =>
+      Array.from({ length: 28 }).map((_, i) => ({
+        id: i,
+        angle: (i / 28) * Math.PI * 2 + (Math.random() - 0.5) * 0.5,
+        dist: 80 + Math.random() * 220,
+        size: 30 + Math.random() * 80,
+        delay: Math.random() * 0.15,
+        duration: 1.4 + Math.random() * 1.2,
+      })),
+    [],
+  );
+
+  // Pre-compute flying notes
+  const notes = useMemo(
+    () =>
+      Array.from({ length: 14 }).map((_, i) => ({
+        id: i,
+        denom: i % 2 === 0 ? "1000" : "500",
+        startX: -40 + Math.random() * 80,
+        startY: 40 + Math.random() * 30,
+        endX: -300 + Math.random() * 600,
+        endY: -200 - Math.random() * 350,
+        rotate: -180 + Math.random() * 360,
+        delay: Math.random() * 0.4,
+        duration: 2.4 + Math.random() * 1.5,
+        scale: 0.7 + Math.random() * 0.6,
+      })),
+    [],
+  );
+
+  const showHero = phase === "stomp" || phase === "ui";
+  const showUI = phase === "ui";
 
   return (
     <div
@@ -139,41 +186,180 @@ function WelcomeScreen() {
       ))}
 
       {/* Boot loader */}
-      {booting && (
-        <motion.div
-          className="absolute inset-0 z-30 flex items-center justify-center bg-[#05070d]"
-          initial={{ opacity: 1 }}
-          animate={{ opacity: 0 }}
-          transition={{ duration: 0.8, delay: 1.2 }}
-          style={{ pointerEvents: "none" }}
-        >
+      <AnimatePresence>
+        {phase === "boot" && (
           <motion.div
-            className="flex flex-col items-center gap-4"
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.6 }}
+            className="absolute inset-0 z-30 flex items-center justify-center bg-[#05070d]"
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
           >
-            <div className="relative">
-              <div className="absolute inset-0 animate-ping rounded-full bg-emerald-400/30" />
-              <div className="relative flex h-14 w-14 items-center justify-center rounded-full border border-white/20 bg-white/5 backdrop-blur-xl">
-                <Sparkles className="h-6 w-6 text-emerald-300" />
+            <motion.div
+              className="flex flex-col items-center gap-4"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+              <div className="relative">
+                <div className="absolute inset-0 animate-ping rounded-full bg-emerald-400/30" />
+                <div className="relative flex h-14 w-14 items-center justify-center rounded-full border border-white/20 bg-white/5 backdrop-blur-xl">
+                  <Sparkles className="h-6 w-6 text-emerald-300" />
+                </div>
               </div>
-            </div>
-            <div className="font-mono text-xs uppercase tracking-[0.3em] text-white/50">
-              Initializing
-            </div>
+              <div className="font-mono text-xs uppercase tracking-[0.3em] text-white/50">
+                Initializing
+              </div>
+            </motion.div>
           </motion.div>
-        </motion.div>
-      )}
+        )}
+      </AnimatePresence>
 
-      {/* Main content */}
-      <div className="relative z-10 flex min-h-screen flex-col items-center justify-center px-6 py-12">
-        {/* Glass card */}
+      {/* === BULL CINEMATIC LAYER === */}
+      <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center">
+        <div className="relative h-[70vh] w-full max-w-5xl">
+          {/* Shockwave on stomp */}
+          <AnimatePresence>
+            {phase === "stomp" && (
+              <motion.div
+                key="shock"
+                className="absolute left-1/2 top-[62%] -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-emerald-300/70"
+                initial={{ width: 20, height: 20, opacity: 0.9 }}
+                animate={{ width: 900, height: 900, opacity: 0 }}
+                transition={{ duration: 1.2, ease: "easeOut" }}
+              />
+            )}
+          </AnimatePresence>
+          <AnimatePresence>
+            {phase === "stomp" && (
+              <motion.div
+                key="shock2"
+                className="absolute left-1/2 top-[62%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-cyan-300/60"
+                initial={{ width: 20, height: 20, opacity: 0.8 }}
+                animate={{ width: 1200, height: 1200, opacity: 0 }}
+                transition={{ duration: 1.6, ease: "easeOut", delay: 0.1 }}
+              />
+            )}
+          </AnimatePresence>
+
+          {/* Dust particles */}
+          <AnimatePresence>
+            {(phase === "stomp" || phase === "ui") &&
+              dustParticles.map((p) => {
+                const tx = Math.cos(p.angle) * p.dist;
+                const ty = Math.sin(p.angle) * p.dist - 40; // bias upward
+                return (
+                  <motion.div
+                    key={p.id}
+                    className="absolute left-1/2 top-[62%] rounded-full"
+                    style={{
+                      width: p.size,
+                      height: p.size,
+                      background:
+                        "radial-gradient(circle, rgba(220,230,255,0.55), rgba(180,200,230,0.15) 60%, transparent 75%)",
+                      filter: "blur(6px)",
+                      marginLeft: -p.size / 2,
+                      marginTop: -p.size / 2,
+                    }}
+                    initial={{ x: 0, y: 0, opacity: 0, scale: 0.3 }}
+                    animate={{
+                      x: tx,
+                      y: ty,
+                      opacity: [0, 0.8, 0],
+                      scale: [0.3, 1, 1.6],
+                    }}
+                    transition={{
+                      duration: p.duration,
+                      delay: p.delay,
+                      ease: "easeOut",
+                    }}
+                  />
+                );
+              })}
+          </AnimatePresence>
+
+          {/* Flying rupee notes */}
+          <AnimatePresence>
+            {(phase === "stomp" || phase === "ui") &&
+              notes.map((n) => (
+                <motion.div
+                  key={n.id}
+                  className="absolute left-1/2 top-[62%]"
+                  initial={{
+                    x: n.startX,
+                    y: n.startY,
+                    opacity: 0,
+                    rotate: 0,
+                    scale: 0.4,
+                  }}
+                  animate={{
+                    x: n.endX,
+                    y: n.endY,
+                    opacity: [0, 1, 1, 0],
+                    rotate: n.rotate,
+                    scale: n.scale,
+                  }}
+                  transition={{
+                    duration: n.duration,
+                    delay: n.delay,
+                    ease: "easeOut",
+                  }}
+                >
+                  <RupeeNote denom={n.denom} />
+                </motion.div>
+              ))}
+          </AnimatePresence>
+
+          {/* Bull image */}
+          <motion.img
+            src={bullImg}
+            alt="Glass bull"
+            initial={{ x: "-120vw", y: 0, scale: 1, opacity: 0, filter: "blur(8px)" }}
+            animate={
+              phase === "boot"
+                ? { x: "-120vw", opacity: 0 }
+                : phase === "run"
+                  ? { x: "-5%", opacity: 1, filter: "blur(2px)", scale: 1.05 }
+                  : phase === "stomp"
+                    ? { x: "0%", y: [0, -10, 8, 0], scale: [1.05, 1.08, 1.02, 1], opacity: 1, filter: "blur(0px)" }
+                    : { x: heroX as unknown as number, y: heroY as unknown as number, scale: 1, opacity: 1, filter: "blur(0px)" }
+            }
+            transition={
+              phase === "run"
+                ? { duration: T_RUN / 1000, ease: [0.2, 0.7, 0.3, 1] }
+                : phase === "stomp"
+                  ? { duration: 0.5, ease: "easeOut" }
+                  : { duration: 0.6, ease: "easeOut" }
+            }
+            className="absolute left-1/2 top-1/2 h-[55vh] max-h-[520px] w-auto -translate-x-1/2 -translate-y-1/2 select-none"
+            style={{
+              filter: showHero
+                ? "drop-shadow(0 30px 60px rgba(52,211,153,0.45)) drop-shadow(0 0 80px rgba(59,130,246,0.35))"
+                : undefined,
+            }}
+            draggable={false}
+          />
+
+          {/* Ground glow under bull */}
+          <AnimatePresence>
+            {showHero && (
+              <motion.div
+                className="absolute left-1/2 top-[78%] h-12 w-[60%] -translate-x-1/2 rounded-[50%] bg-emerald-400/30 blur-2xl"
+                initial={{ opacity: 0, scaleX: 0.5 }}
+                animate={{ opacity: 0.7, scaleX: 1 }}
+                transition={{ duration: 0.5 }}
+              />
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
+
+      {/* === MAIN UI (after stomp) === */}
+      <div className="relative z-10 flex min-h-screen flex-col items-center justify-end px-6 pb-12 pt-8 sm:justify-center sm:pb-12">
         <motion.div
           initial={{ opacity: 0, scale: 0.92, y: 30 }}
-          animate={{ opacity: booting ? 0 : 1, scale: booting ? 0.92 : 1, y: booting ? 30 : 0 }}
-          transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
-          className="welcome-card relative w-full max-w-xl overflow-hidden rounded-[2rem] border border-white/15 bg-white/[0.06] p-8 sm:p-12 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.6)] backdrop-blur-2xl"
+          animate={showUI ? { opacity: 1, scale: 1, y: 0 } : { opacity: 0, scale: 0.92, y: 30 }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          className="welcome-card relative mt-auto w-full max-w-xl overflow-hidden rounded-[2rem] border border-white/15 bg-white/[0.06] p-8 sm:p-10 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.6)] backdrop-blur-2xl sm:mt-[35vh]"
         >
           {/* Shimmer sweep */}
           <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[2rem]">
@@ -183,61 +369,31 @@ function WelcomeScreen() {
               transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", repeatDelay: 2 }}
             />
           </div>
-
-          {/* Inner highlight */}
           <div className="pointer-events-none absolute inset-0 rounded-[2rem] bg-gradient-to-b from-white/10 via-transparent to-transparent" />
 
           <div className="relative flex flex-col items-center text-center">
-            {/* Bull logo */}
-            <motion.div
-              style={{ x: logoX, y: logoY }}
-              className="relative mb-6"
-            >
-              <motion.div
-                animate={{ y: [0, -8, 0], scale: [1, 1.03, 1] }}
-                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                className="relative flex h-28 w-28 items-center justify-center rounded-3xl border border-white/20 bg-gradient-to-br from-emerald-400/30 via-cyan-400/10 to-purple-500/20 backdrop-blur-xl shadow-[0_20px_60px_-10px_rgba(52,211,153,0.5)]"
-              >
-                {/* Glow */}
-                <div className="absolute inset-0 rounded-3xl bg-emerald-400/20 blur-2xl" />
-                <BullIcon className="relative z-10 h-16 w-16 text-white drop-shadow-[0_2px_8px_rgba(52,211,153,0.8)]" />
-                {/* Reflection */}
-                <div className="pointer-events-none absolute inset-x-3 top-2 h-1/3 rounded-2xl bg-gradient-to-b from-white/40 to-transparent opacity-60" />
-              </motion.div>
-              {/* Orbit dot */}
-              <motion.div
-                className="absolute left-1/2 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-emerald-300 shadow-[0_0_20px_rgba(52,211,153,1)]"
-                animate={{ rotate: 360 }}
-                transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-                style={{ transformOrigin: "0 64px" }}
-              />
-            </motion.div>
-
-            {/* Tagline */}
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: booting ? 0 : 1, y: booting ? 20 : 0 }}
-              transition={{ duration: 0.8, delay: 0.5 }}
+              animate={showUI ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+              transition={{ duration: 0.7, delay: 0.2 }}
               className="bg-gradient-to-b from-white via-white to-white/60 bg-clip-text text-3xl sm:text-4xl font-bold tracking-tight text-transparent"
             >
               {tagline}
             </motion.h1>
 
-            {/* Welcome text */}
             <motion.p
               initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: booting ? 0 : 1, y: booting ? 20 : 0 }}
-              transition={{ duration: 0.8, delay: 0.7 }}
+              animate={showUI ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+              transition={{ duration: 0.7, delay: 0.35 }}
               className="mt-3 max-w-md text-sm sm:text-base text-white/60"
             >
               Welcome to your personal trading dashboard
             </motion.p>
 
-            {/* Mini stat chips */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: booting ? 0 : 1, y: booting ? 20 : 0 }}
-              transition={{ duration: 0.8, delay: 0.9 }}
+              animate={showUI ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+              transition={{ duration: 0.7, delay: 0.5 }}
               className="mt-6 flex flex-wrap items-center justify-center gap-2"
             >
               {[
@@ -255,28 +411,25 @@ function WelcomeScreen() {
               ))}
             </motion.div>
 
-            {/* CTA */}
             <motion.button
               initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: booting ? 0 : 1, y: booting ? 20 : 0 }}
-              transition={{ duration: 0.8, delay: 1.1 }}
+              animate={showUI ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+              transition={{ duration: 0.7, delay: 0.65 }}
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.97 }}
               onClick={enterDashboard}
               className="welcome-cta group relative mt-8 inline-flex items-center gap-2 overflow-hidden rounded-full border border-white/25 bg-gradient-to-r from-emerald-400/30 via-emerald-300/20 to-cyan-400/30 px-8 py-3.5 text-sm font-semibold text-white backdrop-blur-xl shadow-[0_10px_40px_-10px_rgba(52,211,153,0.6)] transition-shadow hover:shadow-[0_15px_60px_-10px_rgba(52,211,153,0.9)]"
             >
-              {/* Shine sweep on hover */}
               <span className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
               <TrendingUp className="relative h-4 w-4" />
               <span className="relative">Enter Dashboard</span>
               <ArrowRight className="relative h-4 w-4 transition-transform group-hover:translate-x-1" />
             </motion.button>
 
-            {/* Skip */}
             <motion.button
               initial={{ opacity: 0 }}
-              animate={{ opacity: booting ? 0 : 0.5 }}
-              transition={{ duration: 0.8, delay: 1.3 }}
+              animate={showUI ? { opacity: 0.5 } : { opacity: 0 }}
+              transition={{ duration: 0.7, delay: 0.85 }}
               onClick={enterDashboard}
               className="mt-4 text-xs text-white/40 hover:text-white/70 transition-colors"
             >
@@ -285,12 +438,11 @@ function WelcomeScreen() {
           </div>
         </motion.div>
 
-        {/* Footer hint */}
         <motion.div
           initial={{ opacity: 0 }}
-          animate={{ opacity: booting ? 0 : 0.4 }}
-          transition={{ duration: 1, delay: 1.5 }}
-          className="mt-8 text-center text-[11px] uppercase tracking-[0.25em] text-white/40"
+          animate={showUI ? { opacity: 0.4 } : { opacity: 0 }}
+          transition={{ duration: 1, delay: 1 }}
+          className="mt-6 text-center text-[11px] uppercase tracking-[0.25em] text-white/40"
         >
           Powered by Live PSX Data
         </motion.div>
@@ -299,53 +451,32 @@ function WelcomeScreen() {
   );
 }
 
-function BullIcon({ className }: { className?: string }) {
+function RupeeNote({ denom }: { denom: string }) {
+  const isThousand = denom === "1000";
   return (
-    <svg
-      viewBox="0 0 64 64"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className={className}
+    <div
+      className="relative h-10 w-20 select-none rounded-md border shadow-[0_8px_24px_rgba(0,0,0,0.5)]"
+      style={{
+        background: isThousand
+          ? "linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #1e40af 100%)"
+          : "linear-gradient(135deg, #166534 0%, #22c55e 50%, #14532d 100%)",
+        borderColor: isThousand ? "rgba(147,197,253,0.6)" : "rgba(134,239,172,0.6)",
+        boxShadow: isThousand
+          ? "0 0 20px rgba(59,130,246,0.5), inset 0 1px 0 rgba(255,255,255,0.3)"
+          : "0 0 20px rgba(34,197,94,0.5), inset 0 1px 0 rgba(255,255,255,0.3)",
+      }}
     >
-      {/* Horns */}
-      <path
-        d="M10 18 C 6 10, 14 6, 20 12 C 22 14, 24 16, 26 18"
-        stroke="currentColor"
-        strokeWidth="3"
-        strokeLinecap="round"
-        fill="none"
-      />
-      <path
-        d="M54 18 C 58 10, 50 6, 44 12 C 42 14, 40 16, 38 18"
-        stroke="currentColor"
-        strokeWidth="3"
-        strokeLinecap="round"
-        fill="none"
-      />
-      {/* Head */}
-      <path
-        d="M18 20 C 18 14, 24 12, 32 12 C 40 12, 46 14, 46 20 L 46 36 C 46 44, 40 50, 32 50 C 24 50, 18 44, 18 36 Z"
-        fill="currentColor"
-        fillOpacity="0.15"
-        stroke="currentColor"
-        strokeWidth="2.5"
-        strokeLinejoin="round"
-      />
-      {/* Eyes */}
-      <circle cx="26" cy="28" r="2" fill="currentColor" />
-      <circle cx="38" cy="28" r="2" fill="currentColor" />
-      {/* Nose ring */}
-      <ellipse cx="32" cy="40" rx="5" ry="3" stroke="currentColor" strokeWidth="2" fill="none" />
-      <circle cx="29" cy="40" r="0.8" fill="currentColor" />
-      <circle cx="35" cy="40" r="0.8" fill="currentColor" />
-      {/* Up arrow accent */}
-      <path
-        d="M32 8 L 32 4 M 28 6 L 32 2 L 36 6"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
+      <div className="absolute inset-0 flex items-center justify-between px-1.5">
+        <div className="text-[7px] font-bold uppercase leading-tight text-white/90">
+          State Bank
+          <br />
+          Pakistan
+        </div>
+        <div className="font-mono text-base font-extrabold text-white drop-shadow">
+          {denom}
+        </div>
+      </div>
+      <div className="pointer-events-none absolute inset-0 rounded-md bg-gradient-to-tr from-white/0 via-white/20 to-white/0" />
+    </div>
   );
 }
