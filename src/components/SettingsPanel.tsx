@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { Settings2, RotateCcw, X } from "lucide-react";
+import { Settings2, RotateCcw, X, Sun, Moon } from "lucide-react";
 import { useCustomization, type ButtonStyle, type TabStyle } from "@/lib/customization";
 import { useTheme, type Theme } from "@/lib/theme";
-import { Sun, Moon, Sparkles } from "lucide-react";
 
 const BUTTON_STYLES: { id: ButtonStyle; label: string }[] = [
   { id: "default", label: "Default" },
@@ -21,7 +20,6 @@ const TAB_STYLES: { id: TabStyle; label: string }[] = [
 const THEMES: { id: Theme; icon: typeof Sun; label: string }[] = [
   { id: "dark", icon: Moon, label: "Dark" },
   { id: "light", icon: Sun, label: "Light" },
-  { id: "sepia", icon: Sparkles, label: "Glass" },
 ];
 
 interface SettingsPanelProps {
