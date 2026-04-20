@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 
-export type Theme = "light" | "dark" | "sepia";
+export type Theme = "light" | "dark";
 
 interface ThemeContextType {
   theme: Theme;
@@ -9,7 +9,7 @@ interface ThemeContextType {
   toggleTheme: () => void;
 }
 
-const ORDER: Theme[] = ["dark", "light", "sepia"];
+const ORDER: Theme[] = ["dark", "light"];
 
 const ThemeContext = createContext<ThemeContextType>({
   theme: "dark",
@@ -23,14 +23,15 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const stored = localStorage.getItem("portfolio-theme") as Theme | null;
-    if (stored && ORDER.includes(stored)) setThemeState(stored);
+    // Migrate old "sepia" value to "light"
+    if (stored === "light" || stored === "dark") setThemeState(stored);
+    else if (stored === ("sepia" as Theme)) setThemeState("light");
   }, []);
 
   useEffect(() => {
     const root = document.documentElement;
     root.classList.remove("dark", "sepia");
     if (theme === "dark") root.classList.add("dark");
-    if (theme === "sepia") root.classList.add("sepia");
     localStorage.setItem("portfolio-theme", theme);
   }, [theme]);
 
