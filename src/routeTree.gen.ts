@@ -9,12 +9,18 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as SheetRouteImport } from './routes/sheet'
 import { Route as PortfolioRouteImport } from './routes/portfolio'
 import { Route as LdcpRouteImport } from './routes/ldcp'
 import { Route as AnalyticsRouteImport } from './routes/analytics'
 import { Route as IndexRouteImport } from './routes/index'
 
+const WelcomeRoute = WelcomeRouteImport.update({
+  id: '/welcome',
+  path: '/welcome',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SheetRoute = SheetRouteImport.update({
   id: '/sheet',
   path: '/sheet',
@@ -47,6 +53,7 @@ export interface FileRoutesByFullPath {
   '/ldcp': typeof LdcpRoute
   '/portfolio': typeof PortfolioRoute
   '/sheet': typeof SheetRoute
+  '/welcome': typeof WelcomeRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -54,6 +61,7 @@ export interface FileRoutesByTo {
   '/ldcp': typeof LdcpRoute
   '/portfolio': typeof PortfolioRoute
   '/sheet': typeof SheetRoute
+  '/welcome': typeof WelcomeRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -62,13 +70,21 @@ export interface FileRoutesById {
   '/ldcp': typeof LdcpRoute
   '/portfolio': typeof PortfolioRoute
   '/sheet': typeof SheetRoute
+  '/welcome': typeof WelcomeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/analytics' | '/ldcp' | '/portfolio' | '/sheet'
+  fullPaths: '/' | '/analytics' | '/ldcp' | '/portfolio' | '/sheet' | '/welcome'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/analytics' | '/ldcp' | '/portfolio' | '/sheet'
-  id: '__root__' | '/' | '/analytics' | '/ldcp' | '/portfolio' | '/sheet'
+  to: '/' | '/analytics' | '/ldcp' | '/portfolio' | '/sheet' | '/welcome'
+  id:
+    | '__root__'
+    | '/'
+    | '/analytics'
+    | '/ldcp'
+    | '/portfolio'
+    | '/sheet'
+    | '/welcome'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -77,10 +93,18 @@ export interface RootRouteChildren {
   LdcpRoute: typeof LdcpRoute
   PortfolioRoute: typeof PortfolioRoute
   SheetRoute: typeof SheetRoute
+  WelcomeRoute: typeof WelcomeRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/welcome': {
+      id: '/welcome'
+      path: '/welcome'
+      fullPath: '/welcome'
+      preLoaderRoute: typeof WelcomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sheet': {
       id: '/sheet'
       path: '/sheet'
@@ -125,6 +149,7 @@ const rootRouteChildren: RootRouteChildren = {
   LdcpRoute: LdcpRoute,
   PortfolioRoute: PortfolioRoute,
   SheetRoute: SheetRoute,
+  WelcomeRoute: WelcomeRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

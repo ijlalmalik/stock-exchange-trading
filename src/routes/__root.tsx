@@ -1,5 +1,5 @@
-import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
-import { useState } from "react";
+import { Outlet, Link, createRootRoute, HeadContent, Scripts, useLocation, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import appCss from "../styles.css?url";
 import { Sidebar } from "@/components/Sidebar";
 import { MobileHeader, ViewModeFloating } from "@/components/MobileHeader";
@@ -83,7 +83,27 @@ function RootComponent() {
 function AppShell() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { mode } = useViewMode();
+  const location = useLocation();
+  const navigate = useNavigate();
   const forceMobile = mode === "mobile";
+  const isWelcome = location.pathname === "/welcome";
+
+  // First-visit auto-redirect to welcome screen
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const seen = localStorage.getItem("welcome-seen");
+      if (!seen && location.pathname === "/") {
+        navigate({ to: "/welcome" });
+      }
+    } catch {}
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Welcome screen renders fullscreen without app chrome
+  if (isWelcome) {
+    return <Outlet />;
+  }
 
   return (
     <div className={`flex min-h-screen ${forceMobile ? "mx-auto max-w-[430px] border-x border-border shadow-2xl" : ""}`}>
