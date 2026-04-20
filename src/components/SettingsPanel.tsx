@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Settings2, RotateCcw, X, Sun, Moon } from "lucide-react";
-import { useCustomization, type ButtonStyle, type TabStyle } from "@/lib/customization";
+import { useCustomization, ACCENT_PRESETS, type ButtonStyle, type TabStyle } from "@/lib/customization";
 import { useTheme, type Theme } from "@/lib/theme";
 
 const BUTTON_STYLES: { id: ButtonStyle; label: string }[] = [
@@ -141,14 +141,47 @@ export function SettingsPanel({ variant = "icon", className = "" }: SettingsPane
                 onChange={(v) => c.set("radius", v)}
               />
 
-              {/* Accent hue */}
+              {/* Accent presets */}
+              <Section label="Accent color">
+                <div className="mb-2 flex flex-wrap gap-2">
+                  {ACCENT_PRESETS.map((p) => {
+                    const active = Math.abs(c.accentHue - p.hue) < 4;
+                    return (
+                      <button
+                        key={p.id}
+                        onClick={() => c.set("accentHue", p.hue)}
+                        title={p.label}
+                        data-no-glass
+                        className={`h-8 w-8 rounded-full border-2 transition-all ${
+                          active ? "border-foreground scale-110" : "border-white/30 hover:scale-105"
+                        }`}
+                        style={{
+                          background: `radial-gradient(circle at 30% 30%, ${p.swatch}, ${p.swatch}cc)`,
+                          boxShadow: active ? `0 0 0 2px var(--background), 0 0 0 4px ${p.swatch}` : undefined,
+                        }}
+                      />
+                    );
+                  })}
+                </div>
+                <Slider
+                  label="Custom hue"
+                  value={c.accentHue}
+                  min={0}
+                  max={360}
+                  unit="°"
+                  onChange={(v) => c.set("accentHue", v)}
+                />
+              </Section>
+
+              {/* Animation speed */}
               <Slider
-                label="Accent hue"
-                value={c.accentHue}
-                min={0}
-                max={360}
-                unit="°"
-                onChange={(v) => c.set("accentHue", v)}
+                label="Animation speed"
+                value={c.animationSpeed}
+                min={0.25}
+                max={2}
+                step={0.05}
+                unit="×"
+                onChange={(v) => c.set("animationSpeed", v)}
               />
 
               {/* Glass blur */}
@@ -246,6 +279,7 @@ function Slider({
   value,
   min,
   max,
+  step = 1,
   unit,
   onChange,
 }: {
@@ -253,6 +287,7 @@ function Slider({
   value: number;
   min: number;
   max: number;
+  step?: number;
   unit: string;
   onChange: (v: number) => void;
 }) {
@@ -263,7 +298,7 @@ function Slider({
           {label}
         </p>
         <span className="font-mono text-[11px] text-foreground">
-          {value}
+          {step < 1 ? value.toFixed(2) : value}
           {unit}
         </span>
       </div>
@@ -271,6 +306,7 @@ function Slider({
         type="range"
         min={min}
         max={max}
+        step={step}
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
         className="w-full accent-[var(--primary)]"
