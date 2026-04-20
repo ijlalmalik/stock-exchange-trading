@@ -12,6 +12,7 @@ export interface CustomizationState {
   accentHue: number; // 0-360, shifts --primary hue
   density: "compact" | "cozy" | "comfortable";
   reducedMotion: boolean;
+  animationSpeed: number; // 0.25 - 2 multiplier
 }
 
 const DEFAULTS: CustomizationState = {
@@ -23,7 +24,16 @@ const DEFAULTS: CustomizationState = {
   accentHue: 250,
   density: "cozy",
   reducedMotion: false,
+  animationSpeed: 1,
 };
+
+export const ACCENT_PRESETS: { id: string; label: string; hue: number; swatch: string }[] = [
+  { id: "emerald", label: "Emerald", hue: 152, swatch: "#34d399" },
+  { id: "blue", label: "Blue", hue: 220, swatch: "#3b82f6" },
+  { id: "purple", label: "Purple", hue: 280, swatch: "#a855f7" },
+  { id: "rose", label: "Rose", hue: 350, swatch: "#f43f5e" },
+  { id: "amber", label: "Amber", hue: 45, swatch: "#f59e0b" },
+];
 
 interface CustomizationContextType extends CustomizationState {
   set: <K extends keyof CustomizationState>(key: K, value: CustomizationState[K]) => void;
@@ -68,6 +78,7 @@ export function CustomizationProvider({ children }: { children: ReactNode }) {
       "--c-density-y",
       state.density === "compact" ? "0.35rem" : state.density === "comfortable" ? "0.75rem" : "0.55rem",
     );
+    root.style.setProperty("--c-anim-speed", String(state.animationSpeed));
     root.dataset.buttonStyle = state.buttonStyle;
     root.dataset.tabStyle = state.tabStyle;
     root.dataset.density = state.density;
