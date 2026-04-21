@@ -5,8 +5,14 @@ import { TrendingUp, ArrowRight, Sparkles } from "lucide-react";
 import bullImg from "@/assets/bull-hero.png";
 
 export const Route = createFileRoute("/welcome")({
-  component: WelcomeScreen,
+  component: WelcomeRoute,
 });
+
+function WelcomeRoute() {
+  return <WelcomeScreen />;
+}
+
+export { WelcomeScreen };
 
 const TAGLINES = [
   "Trade Smart. Grow Strong.",
@@ -20,7 +26,7 @@ const T_RUN = 750;
 const T_STOMP = 320;
 const T_REVEAL = 500;
 
-function WelcomeScreen() {
+function WelcomeScreen({ onDone }: { onDone?: () => void } = {}) {
   const navigate = useNavigate();
   const [phase, setPhase] = useState<"boot" | "run" | "stomp" | "ui">("boot");
   // Pick tagline AFTER mount to avoid SSR/CSR hydration mismatch from Math.random()
@@ -64,7 +70,11 @@ function WelcomeScreen() {
     try {
       localStorage.setItem("welcome-seen", "1");
     } catch {}
-    navigate({ to: "/" });
+    if (onDone) {
+      onDone();
+    } else {
+      navigate({ to: "/" });
+    }
   };
 
   const tickers = useMemo(

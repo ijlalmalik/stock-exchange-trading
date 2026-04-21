@@ -1,4 +1,4 @@
-import { Outlet, Link, createRootRoute, HeadContent, Scripts, useLocation, useNavigate } from "@tanstack/react-router";
+import { Outlet, Link, createRootRoute, HeadContent, Scripts, useLocation } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import appCss from "../styles.css?url";
 import { Sidebar } from "@/components/Sidebar";
@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/lib/theme";
 import { ViewModeProvider, useViewMode } from "@/lib/view-mode";
 import { PortfolioProvider } from "@/lib/portfolio-store";
 import { CustomizationProvider } from "@/lib/customization";
+import { WelcomeOverlay } from "@/components/WelcomeOverlay";
 
 function NotFoundComponent() {
   return (
@@ -82,39 +83,51 @@ function RootComponent() {
 
 function AppShell() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [welcomeChecked, setWelcomeChecked] = useState(false);
+  // welcomeState: "checking" -> "show" (render welcome, dashboard NOT mounted) -> "done"
+  const [welcomeState, setWelcomeState] = useState<"checking" | "show" | "done">("checking");
   const { mode } = useViewMode();
   const location = useLocation();
-  const navigate = useNavigate();
   const forceMobile = mode === "mobile";
-  const isWelcome = location.pathname === "/welcome";
+  const isWelcomeRoute = location.pathname === "/welcome";
 
-  // First-visit auto-redirect to welcome screen — block dashboard render until checked
   useEffect(() => {
     if (typeof window === "undefined") {
-      setWelcomeChecked(true);
+      setWelcomeState("done");
       return;
     }
     try {
       const seen = localStorage.getItem("welcome-seen");
-      if (!seen && location.pathname === "/") {
-        navigate({ to: "/welcome" });
-      }
-    } catch {}
-    setWelcomeChecked(true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+      setWelcomeState(seen ? "done" : "show");
+    } catch {
+      setWelcomeState("done");
+    }
   }, []);
 
-  // Welcome screen renders fullscreen without app chrome
-  if (isWelcome) {
+  // Standalone /welcome route still works (e.g. for replays)
+  if (isWelcomeRoute) {
     return <Outlet />;
   }
 
-  // Hide dashboard until we've checked localStorage — prevents flash before redirect
-  if (!welcomeChecked) {
+  // Solid screen while we check localStorage — prevents ANY dashboard flash
+  if (welcomeState === "checking") {
     return <div className="fixed inset-0 z-[100] bg-[#05070d]" />;
   }
 
+  // Welcome overlay is rendered INSTEAD of the dashboard. Dashboard does not mount.
+  if (welcomeState === "show") {
+    return (
+      <WelcomeOverlay
+        onDone={() => {
+          try {
+            localStorage.setItem("welcome-seen", "1");
+          } catch {}
+          setWelcomeState("done");
+        }}
+      />
+    );
+  }
+
+  // welcomeState === "done" — dashboard mounts now, never before
   return (
     <div className={`flex min-h-screen ${forceMobile ? "mx-auto max-w-[430px] border-x border-border shadow-2xl" : ""}`}>
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
