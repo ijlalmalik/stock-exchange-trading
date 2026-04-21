@@ -23,7 +23,11 @@ const T_REVEAL = 600; // UI fades up after stomp
 function WelcomeScreen() {
   const navigate = useNavigate();
   const [phase, setPhase] = useState<"boot" | "run" | "stomp" | "ui">("boot");
-  const [tagline] = useState(() => TAGLINES[Math.floor(Math.random() * TAGLINES.length)]);
+  // Pick tagline AFTER mount to avoid SSR/CSR hydration mismatch from Math.random()
+  const [tagline, setTagline] = useState(TAGLINES[0]);
+  useEffect(() => {
+    setTagline(TAGLINES[Math.floor(Math.random() * TAGLINES.length)]);
+  }, []);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Parallax mouse tracking
