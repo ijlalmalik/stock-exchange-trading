@@ -82,27 +82,37 @@ function RootComponent() {
 
 function AppShell() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [welcomeChecked, setWelcomeChecked] = useState(false);
   const { mode } = useViewMode();
   const location = useLocation();
   const navigate = useNavigate();
   const forceMobile = mode === "mobile";
   const isWelcome = location.pathname === "/welcome";
 
-  // First-visit auto-redirect to welcome screen
+  // First-visit auto-redirect to welcome screen — block dashboard render until checked
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    if (typeof window === "undefined") {
+      setWelcomeChecked(true);
+      return;
+    }
     try {
       const seen = localStorage.getItem("welcome-seen");
       if (!seen && location.pathname === "/") {
         navigate({ to: "/welcome" });
       }
     } catch {}
+    setWelcomeChecked(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Welcome screen renders fullscreen without app chrome
   if (isWelcome) {
     return <Outlet />;
+  }
+
+  // Hide dashboard until we've checked localStorage — prevents flash before redirect
+  if (!welcomeChecked) {
+    return <div className="fixed inset-0 z-[100] bg-[#05070d]" />;
   }
 
   return (
