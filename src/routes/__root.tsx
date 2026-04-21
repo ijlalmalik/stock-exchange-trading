@@ -1,4 +1,4 @@
-import { Outlet, Link, createRootRoute, HeadContent, Scripts, useLocation, useNavigate } from "@tanstack/react-router";
+import { Outlet, Link, createRootRoute, HeadContent, Scripts, useLocation } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import appCss from "../styles.css?url";
 import { Sidebar } from "@/components/Sidebar";
@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/lib/theme";
 import { ViewModeProvider, useViewMode } from "@/lib/view-mode";
 import { PortfolioProvider } from "@/lib/portfolio-store";
 import { CustomizationProvider } from "@/lib/customization";
+import { WelcomeOverlay } from "@/components/WelcomeOverlay";
 
 function NotFoundComponent() {
   return (
