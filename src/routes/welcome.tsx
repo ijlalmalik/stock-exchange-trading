@@ -214,9 +214,9 @@ function WelcomeScreen() {
         )}
       </AnimatePresence>
 
-      {/* === BULL CINEMATIC LAYER === */}
-      <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center">
-        <div className="relative h-[70vh] w-full max-w-5xl">
+      {/* === BULL CINEMATIC LAYER (upper area, never overlaps text card) === */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-20 flex h-[58vh] items-center justify-center sm:h-[55vh]">
+        <div className="relative h-full w-full max-w-5xl">
           {/* Shockwave on stomp */}
           <AnimatePresence>
             {phase === "stomp" && (
@@ -309,7 +309,7 @@ function WelcomeScreen() {
               ))}
           </AnimatePresence>
 
-          {/* Bull image */}
+          {/* Bull image — anchored upper area */}
           <motion.img
             src={bullImg}
             alt="Glass bull"
@@ -318,9 +318,9 @@ function WelcomeScreen() {
               phase === "boot"
                 ? { x: "-120vw", opacity: 0 }
                 : phase === "run"
-                  ? { x: "-5%", opacity: 1, filter: "blur(2px)", scale: 1.05 }
+                  ? { x: "-5%", opacity: 1, filter: "blur(2px)", scale: 1.0 }
                   : phase === "stomp"
-                    ? { x: "0%", y: [0, -10, 8, 0], scale: [1.05, 1.08, 1.02, 1], opacity: 1, filter: "blur(0px)" }
+                    ? { x: "0%", y: [0, -10, 8, 0], scale: [1.0, 1.03, 0.98, 1], opacity: 1, filter: "blur(0px)" }
                     : { x: heroX as unknown as number, y: heroY as unknown as number, scale: 1, opacity: 1, filter: "blur(0px)" }
             }
             transition={
@@ -330,7 +330,7 @@ function WelcomeScreen() {
                   ? { duration: 0.5, ease: "easeOut" }
                   : { duration: 0.6, ease: "easeOut" }
             }
-            className="absolute left-1/2 top-1/2 h-[55vh] max-h-[520px] w-auto -translate-x-1/2 -translate-y-1/2 select-none"
+            className="absolute left-1/2 top-1/2 h-[42vh] max-h-[400px] w-auto -translate-x-1/2 -translate-y-1/2 select-none sm:h-[46vh]"
             style={{
               filter: showHero
                 ? "drop-shadow(0 30px 60px rgba(52,211,153,0.45)) drop-shadow(0 0 80px rgba(59,130,246,0.35))"
@@ -353,13 +353,13 @@ function WelcomeScreen() {
         </div>
       </div>
 
-      {/* === MAIN UI (after stomp) === */}
-      <div className="relative z-10 flex min-h-screen flex-col items-center justify-end px-6 pb-12 pt-8 sm:justify-center sm:pb-12">
+      {/* === MAIN UI (after stomp) — anchored to lower 42% so it never overlaps the bull === */}
+      <div className="relative z-30 flex min-h-screen flex-col items-center justify-end px-6 pb-10 pt-[58vh]">
         <motion.div
           initial={{ opacity: 0, scale: 0.92, y: 30 }}
           animate={showUI ? { opacity: 1, scale: 1, y: 0 } : { opacity: 0, scale: 0.92, y: 30 }}
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          className="welcome-card relative mt-auto w-full max-w-xl overflow-hidden rounded-[2rem] border border-white/15 bg-white/[0.06] p-8 sm:p-10 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.6)] backdrop-blur-2xl sm:mt-[35vh]"
+          className="welcome-card relative w-full max-w-xl overflow-hidden rounded-[2rem] border border-white/20 bg-white/[0.07] p-7 sm:p-9 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.7),inset_0_1px_0_0_rgba(255,255,255,0.25)] backdrop-blur-[40px] backdrop-saturate-200"
         >
           {/* Shimmer sweep */}
           <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[2rem]">
