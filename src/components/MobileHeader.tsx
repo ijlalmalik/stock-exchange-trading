@@ -48,22 +48,22 @@ export function ViewModeFloating() {
   const { theme, toggleTheme } = useTheme();
 
   return (
-    <div className="fixed bottom-4 right-4 z-40 flex items-center gap-1 rounded-full border border-border bg-card/80 p-1 shadow-lg backdrop-blur-xl">
+    <div className="fixed bottom-3 right-3 z-40 flex items-center gap-0.5 rounded-full border border-border bg-card/80 p-0.5 shadow-md backdrop-blur-xl">
       <button
         onClick={toggleTheme}
         title={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
         aria-label="Toggle theme"
-        className="inline-flex h-8 w-8 items-center justify-center rounded-full text-foreground transition-all hover:bg-surface-hover hover:text-primary"
+        className="inline-flex h-7 w-7 items-center justify-center rounded-full text-foreground transition-all hover:bg-surface-hover hover:text-primary"
       >
-        {theme === "dark" ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
+        {theme === "dark" ? <Sun className="h-3 w-3" /> : <Moon className="h-3 w-3" />}
       </button>
       <button
         onClick={toggleMode}
         title={mode === "mobile" ? "Switch to desktop view" : "Switch to mobile view"}
         aria-label="Toggle view mode"
-        className="hidden lg:inline-flex h-8 w-8 items-center justify-center rounded-full text-foreground transition-all hover:bg-surface-hover hover:text-primary"
+        className="hidden lg:inline-flex h-7 w-7 items-center justify-center rounded-full text-foreground transition-all hover:bg-surface-hover hover:text-primary"
       >
-        {mode === "mobile" ? <Monitor className="h-3.5 w-3.5" /> : <Smartphone className="h-3.5 w-3.5" />}
+        {mode === "mobile" ? <Monitor className="h-3 w-3" /> : <Smartphone className="h-3 w-3" />}
       </button>
     </div>
   );
