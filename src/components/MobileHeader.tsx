@@ -40,30 +40,35 @@ export function MobileHeader({ onMenuClick }: MobileHeaderProps) {
 }
 
 /**
- * Floating quick-controls dock — bottom-right corner.
- * Compact, glassy, ALWAYS visible so theme + view toggles never get hidden in the sidebar.
+ * Floating quick-controls — bottom-right corner.
+ * Two small circular 1:1 buttons stacked vertically. Always visible.
  */
 export function ViewModeFloating() {
   const { mode, toggleMode } = useViewMode();
   const { theme, toggleTheme } = useTheme();
 
+  const baseBtn =
+    "inline-flex h-11 w-11 items-center justify-center rounded-full border border-border bg-card/80 text-foreground shadow-lg backdrop-blur-xl transition-all duration-200 hover:scale-105 hover:text-primary hover:shadow-primary/30 hover:border-primary/50";
+
   return (
-    <div className="fixed bottom-3 right-3 z-40 flex items-center gap-0.5 rounded-full border border-border bg-card/80 p-0.5 shadow-md backdrop-blur-xl">
+    <div className="fixed bottom-4 right-4 z-50 flex flex-col items-center gap-2">
       <button
+        data-no-glass
         onClick={toggleTheme}
         title={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
         aria-label="Toggle theme"
-        className="inline-flex h-7 w-7 items-center justify-center rounded-full text-foreground transition-all hover:bg-surface-hover hover:text-primary"
+        className={baseBtn}
       >
-        {theme === "dark" ? <Sun className="h-3 w-3" /> : <Moon className="h-3 w-3" />}
+        {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
       </button>
       <button
+        data-no-glass
         onClick={toggleMode}
         title={mode === "mobile" ? "Switch to desktop view" : "Switch to mobile view"}
         aria-label="Toggle view mode"
-        className="hidden lg:inline-flex h-7 w-7 items-center justify-center rounded-full text-foreground transition-all hover:bg-surface-hover hover:text-primary"
+        className={`${baseBtn} hidden lg:inline-flex`}
       >
-        {mode === "mobile" ? <Monitor className="h-3 w-3" /> : <Smartphone className="h-3 w-3" />}
+        {mode === "mobile" ? <Monitor className="h-4 w-4" /> : <Smartphone className="h-4 w-4" />}
       </button>
     </div>
   );
