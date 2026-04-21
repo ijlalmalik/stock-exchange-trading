@@ -14,11 +14,11 @@ const TAGLINES = [
   "Precision. Power. Profit.",
 ];
 
-// Animation phase timeline (ms)
-const T_BOOT = 900;
-const T_RUN = 900; // bull runs in
-const T_STOMP = 350; // stomp impact
-const T_REVEAL = 600; // UI fades up after stomp
+// Animation phase timeline (ms) — tight so the screen feels instant
+const T_BOOT = 350;
+const T_RUN = 750;
+const T_STOMP = 320;
+const T_REVEAL = 500;
 
 function WelcomeScreen() {
   const navigate = useNavigate();
@@ -218,8 +218,8 @@ function WelcomeScreen() {
         )}
       </AnimatePresence>
 
-      {/* === BULL CINEMATIC LAYER (upper area, never overlaps text card) === */}
-      <div className="pointer-events-none absolute inset-x-0 top-0 z-20 flex h-[58vh] items-center justify-center sm:h-[55vh]">
+      {/* === BULL CINEMATIC LAYER (lowered so bull legs touch the card) === */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-20 flex h-[72vh] items-end justify-center pb-2 sm:h-[70vh]">
         <div className="relative h-full w-full max-w-5xl">
           {/* Shockwave on stomp */}
           <AnimatePresence>
@@ -357,8 +357,8 @@ function WelcomeScreen() {
         </div>
       </div>
 
-      {/* === MAIN UI (after stomp) — anchored to lower 42% so it never overlaps the bull === */}
-      <div className="relative z-30 flex min-h-screen flex-col items-center justify-end px-6 pb-10 pt-[58vh]">
+      {/* === MAIN UI — sits in lower section so bull legs visually touch the card === */}
+      <div className="relative z-30 flex min-h-screen flex-col items-center justify-end px-6 pb-10 pt-[60vh]">
         <motion.div
           initial={{ opacity: 0, scale: 0.92, y: 30 }}
           animate={showUI ? { opacity: 1, scale: 1, y: 0 } : { opacity: 0, scale: 0.92, y: 30 }}
