@@ -347,34 +347,118 @@
   animation: fadeInScale 0.4s ease-out both;
 }
 
-/* Glass effect — adapts per theme */
-.glass {
-  background: color-mix(in oklab, var(--color-card) 55%, transparent);
-  backdrop-filter: blur(14px) saturate(140%);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
-  border: 1px solid color-mix(in oklab, var(--color-foreground) 10%, transparent);
+/* ===========================================================
+   Liquid Glass — applied GLOBALLY in both Light & Dark themes
+   Stronger blur, refraction-style gradients, glossy edges.
+=========================================================== */
+
+/* Animated luminous backdrop on every theme */
+body {
+  background:
+    radial-gradient(at 18% 12%, color-mix(in oklab, var(--color-primary) 22%, transparent) 0px, transparent 45%),
+    radial-gradient(at 82% 18%, color-mix(in oklab, oklch(0.7 0.2 320) 18%, transparent) 0px, transparent 45%),
+    radial-gradient(at 75% 88%, color-mix(in oklab, oklch(0.75 0.18 200) 20%, transparent) 0px, transparent 50%),
+    radial-gradient(at 12% 82%, color-mix(in oklab, oklch(0.78 0.18 150) 18%, transparent) 0px, transparent 50%),
+    var(--color-background);
+  background-attachment: fixed;
+}
+
+/* Universal liquid-glass surface — applied to cards, popovers, sidebars, etc. */
+.glass,
+[class*="bg-card"],
+[class*="bg-surface"],
+[class*="bg-popover"],
+[class*="bg-secondary"],
+[class*="bg-muted"],
+[class*="bg-accent"],
+[class*="bg-sidebar"] {
+  background-color: color-mix(in oklab, var(--color-card) var(--c-glass-opacity, 55%), transparent) !important;
+  backdrop-filter: blur(var(--c-glass-blur, 28px)) saturate(190%);
+  -webkit-backdrop-filter: blur(var(--c-glass-blur, 28px)) saturate(190%);
+  border: 1px solid color-mix(in oklab, var(--color-foreground) 12%, transparent) !important;
   box-shadow:
-    0 1px 0 0 color-mix(in oklab, var(--color-foreground) 6%, transparent) inset,
-    0 8px 32px -8px color-mix(in oklab, var(--color-foreground) 18%, transparent);
+    inset 0 1px 0 0 color-mix(in oklab, white 25%, transparent),
+    inset 0 -1px 0 0 color-mix(in oklab, var(--color-primary) 8%, transparent),
+    0 10px 32px -10px color-mix(in oklab, var(--color-foreground) 28%, transparent),
+    0 2px 6px -2px color-mix(in oklab, var(--color-foreground) 18%, transparent);
+  position: relative;
+}
+
+/* Glossy top-light highlight on every glass surface (Apple-style refraction) */
+.glass::before,
+[class*="bg-card"]::before,
+[class*="bg-sidebar"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklab, white 18%, transparent) 0%,
+    transparent 45%,
+    transparent 100%
+  );
+  mix-blend-mode: overlay;
+  opacity: 0.7;
+}
+
+.glass:hover {
+  box-shadow:
+    inset 0 1px 0 0 color-mix(in oklab, white 35%, transparent),
+    inset 0 -1px 0 0 color-mix(in oklab, var(--color-primary) 14%, transparent),
+    0 14px 44px -10px color-mix(in oklab, var(--color-primary) 30%, transparent);
+  transform: translateY(-1px);
   transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
 }
-.glass:hover {
-  background: color-mix(in oklab, var(--color-card) 70%, transparent);
-  box-shadow:
-    0 1px 0 0 color-mix(in oklab, var(--color-foreground) 8%, transparent) inset,
-    0 12px 40px -8px color-mix(in oklab, var(--color-primary) 25%, transparent);
-}
 .glass-strong {
-  background: color-mix(in oklab, var(--color-card) 75%, transparent);
-  backdrop-filter: blur(22px) saturate(160%);
-  -webkit-backdrop-filter: blur(22px) saturate(160%);
-  border: 1px solid color-mix(in oklab, var(--color-foreground) 14%, transparent);
+  background: color-mix(in oklab, var(--color-card) 78%, transparent);
+  backdrop-filter: blur(34px) saturate(200%);
+  -webkit-backdrop-filter: blur(34px) saturate(200%);
+  border: 1px solid color-mix(in oklab, var(--color-foreground) 16%, transparent);
 }
 .glass-hover-lift {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 .glass-hover-lift:hover {
   transform: translateY(-2px);
+}
+
+/* Buttons — liquid glass pill (skips primary/destructive which keep their accent) */
+button:not([data-no-glass]):not([class*="bg-primary"]):not([class*="bg-destructive"]):not([class*="bg-gain"]):not([class*="bg-loss"]):not([class*="bg-transparent"]) {
+  backdrop-filter: blur(18px) saturate(180%);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
+  box-shadow:
+    inset 0 1px 0 0 color-mix(in oklab, white 22%, transparent),
+    0 4px 14px -4px color-mix(in oklab, var(--color-foreground) 18%, transparent);
+}
+
+/* Inputs — frosted glass fields */
+input:not([type="range"]):not([type="checkbox"]):not([type="radio"]),
+textarea,
+select {
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+}
+
+/* Tabs — pill with glossy active state */
+[role="tablist"] {
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+}
+[role="tab"][data-state="active"] {
+  box-shadow:
+    inset 0 1px 0 0 color-mix(in oklab, white 30%, transparent),
+    0 4px 12px -4px color-mix(in oklab, var(--color-primary) 30%, transparent);
+}
+
+/* Tooltips, dialogs, menus — extra clarity */
+[role="tooltip"],
+[role="dialog"],
+[role="menu"] {
+  backdrop-filter: blur(32px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(32px) saturate(200%) !important;
+  box-shadow: 0 16px 48px -12px color-mix(in oklab, var(--color-foreground) 35%, transparent) !important;
 }
 
 .recharts-tooltip-wrapper .recharts-default-tooltip {
