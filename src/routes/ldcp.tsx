@@ -113,14 +113,14 @@ function LDCPPage() {
           <p className="text-sm text-muted-foreground">{data.length} symbols — Last Day Closing Prices from PSX</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <div className="relative">
+          <div className="relative flex-1 sm:flex-initial">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <input
               type="text"
               placeholder="Search symbol or company..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="h-9 w-64 rounded-lg border border-border bg-surface pl-9 pr-8 text-sm text-foreground placeholder:text-muted-foreground outline-none transition-all duration-200 focus:border-primary focus:ring-1 focus:ring-primary"
+              className="h-9 w-full sm:w-64 rounded-lg border border-border bg-surface pl-9 pr-8 text-sm text-foreground placeholder:text-muted-foreground outline-none transition-all duration-200 focus:border-primary focus:ring-1 focus:ring-primary"
             />
             {search && (
               <button onClick={() => setSearch("")} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
@@ -132,8 +132,8 @@ function LDCPPage() {
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-xl border border-border bg-card">
-        <table className="w-full text-sm">
+      <div className="-mx-3 sm:mx-0 overflow-x-auto rounded-none sm:rounded-xl border-y sm:border border-border bg-card">
+        <table className="w-full min-w-[760px] text-sm whitespace-nowrap">
           <thead>
             <tr className="border-b border-border bg-surface">
               <th onClick={() => handleSort("symbol")} className="cursor-pointer px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors">

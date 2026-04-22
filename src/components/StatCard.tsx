@@ -21,13 +21,13 @@ export function StatCard({ title, value, subtitle, icon, variant = "default" }: 
   };
 
   return (
-    <div className={`animate-fade-in rounded-xl border bg-card p-5 transition-all duration-300 hover:shadow-lg hover:border-primary/20 ${variantClasses[variant]}`}>
+    <div className={`animate-fade-in rounded-xl border bg-card p-3.5 sm:p-5 transition-all duration-300 hover:shadow-lg hover:border-primary/20 ${variantClasses[variant]}`}>
       <div className="flex items-center justify-between">
-        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{title}</span>
+        <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-muted-foreground">{title}</span>
         <span className="text-muted-foreground">{icon}</span>
       </div>
-      <p className={`mt-2 text-2xl font-bold tracking-tight ${valueClasses[variant]}`}>{value}</p>
-      <p className="mt-1 text-xs text-muted-foreground">{subtitle}</p>
+      <p className={`mt-2 text-lg sm:text-2xl font-bold tracking-tight break-words ${valueClasses[variant]}`}>{value}</p>
+      <p className="mt-1 text-[10px] sm:text-xs text-muted-foreground">{subtitle}</p>
     </div>
   );
 }

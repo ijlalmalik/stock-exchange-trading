@@ -30,14 +30,14 @@ export function PnLChart({ holdings }: PnLChartProps) {
   }));
 
   return (
-    <div className="animate-fade-in rounded-xl border border-border bg-card p-5">
-      <h3 className="mb-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Profit & Loss</h3>
-      <ResponsiveContainer width="100%" height={280}>
-        <BarChart data={data} margin={{ top: 5, right: 5, bottom: 5, left: 5 }}>
-          <XAxis dataKey="script" tick={{ fontSize: 11, fill: "var(--color-muted-foreground)" }} axisLine={false} tickLine={false} />
-          <YAxis tick={{ fontSize: 11, fill: "var(--color-muted-foreground)" }} axisLine={false} tickLine={false} />
+    <div className="animate-fade-in rounded-xl border border-border bg-card p-3.5 sm:p-5">
+      <h3 className="mb-3 sm:mb-4 text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-muted-foreground">Profit & Loss</h3>
+      <ResponsiveContainer width="100%" height={240}>
+        <BarChart data={data} margin={{ top: 5, right: 5, bottom: 5, left: 0 }}>
+          <XAxis dataKey="script" tick={{ fontSize: 10, fill: "var(--color-muted-foreground)" }} axisLine={false} tickLine={false} interval={0} angle={-35} textAnchor="end" height={50} />
+          <YAxis tick={{ fontSize: 10, fill: "var(--color-muted-foreground)" }} axisLine={false} tickLine={false} width={40} />
           <Tooltip content={<CustomTooltip />} cursor={{ fill: "transparent" }} />
-          <Bar dataKey="change" radius={[4, 4, 0, 0]} maxBarSize={40}>
+          <Bar dataKey="change" radius={[4, 4, 0, 0]} maxBarSize={36}>
             {data.map((entry, i) => (
               <Cell
                 key={i}

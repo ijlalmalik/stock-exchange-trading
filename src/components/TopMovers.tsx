@@ -12,9 +12,9 @@ export function TopMovers({ holdings }: TopMoversProps) {
   const losers = sorted.filter((h) => h.changePercent < 0).reverse();
 
   return (
-    <div className="grid gap-5 lg:grid-cols-2">
+    <div className="grid gap-4 sm:gap-5 grid-cols-1 lg:grid-cols-2">
       {/* Gainers */}
-      <div className="animate-fade-in rounded-xl border border-border bg-card p-5">
+      <div className="animate-fade-in rounded-xl border border-border bg-card p-3.5 sm:p-5">
         <div className="mb-4 flex items-center gap-2">
           <TrendingUp className="h-4 w-4 text-gain" />
           <h3 className="text-xs font-semibold uppercase tracking-wider text-gain">Top Gainers</h3>
@@ -43,7 +43,7 @@ export function TopMovers({ holdings }: TopMoversProps) {
       </div>
 
       {/* Losers */}
-      <div className="animate-fade-in rounded-xl border border-border bg-card p-5" style={{ animationDelay: "100ms" }}>
+      <div className="animate-fade-in rounded-xl border border-border bg-card p-3.5 sm:p-5" style={{ animationDelay: "100ms" }}>
         <div className="mb-4 flex items-center gap-2">
           <TrendingDown className="h-4 w-4 text-loss" />
           <h3 className="text-xs font-semibold uppercase tracking-wider text-loss">Top Losers</h3>

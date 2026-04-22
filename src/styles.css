@@ -311,6 +311,8 @@
     /* Prevent any wide element from causing the whole page to horizontally scroll on mobile */
     overflow-x: hidden;
     max-width: 100vw;
+    /* Allow vertical momentum scrolling on iOS */
+    -webkit-overflow-scrolling: touch;
   }
   body {
     background-color: var(--color-background);
@@ -318,16 +320,35 @@
     font-family: var(--font-sans);
     /* Respect iOS safe areas */
     padding-bottom: env(safe-area-inset-bottom);
+    /* Prevent text auto-zoom on iOS rotate */
+    -webkit-text-size-adjust: 100%;
   }
-  /* Better touch behavior on mobile */
+  /* Inner horizontally-scrollable wrappers (tables) — must scroll smoothly on mobile.
+     Page-level overflow-x is hidden, so these containers own horizontal scroll. */
+  .overflow-x-auto {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+  }
+  /* Inputs at >=16px prevents iOS Safari from zooming on focus */
   @media (max-width: 768px) {
+    input, select, textarea {
+      font-size: 16px;
+    }
     button, a, [role="button"], [role="tab"] {
       touch-action: manipulation;
     }
-    /* Ensure interactive elements have a minimum touch target */
     button, a[class*="rounded"], [role="button"] {
-      min-height: 36px;
+      min-height: 38px;
     }
+    /* Soften oversized headings on phones */
+    h1 { font-size: 1.375rem !important; line-height: 1.75rem !important; }
+    /* Tighter card padding on phones */
+    .card-pad-mobile { padding: 1rem !important; }
+  }
+  /* Force-mobile preview frame inherits same rules */
+  html.force-mobile body {
+    max-width: 430px;
+    margin-inline: auto;
   }
 }
 
