@@ -41,11 +41,11 @@ export function KSE100Ticker() {
   const isDown = data ? data.change < 0 : false;
 
   return (
-    <div className="animate-fade-in rounded-xl border border-border bg-card p-5 transition-all duration-500">
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-2.5">
+    <div className="animate-fade-in rounded-xl border border-border bg-card p-3.5 sm:p-5 transition-all duration-500">
+      <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-2">
           <Activity className="h-4 w-4 text-primary" />
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">KSE 100 Index</h3>
+          <h3 className="text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-muted-foreground">KSE 100 Index</h3>
           <span className="inline-flex h-2 w-2 animate-pulse rounded-full bg-gain" />
           <span className="text-[10px] font-medium text-gain">LIVE</span>
         </div>
@@ -68,17 +68,17 @@ export function KSE100Ticker() {
           <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
         </div>
       ) : data ? (
-        <div className="space-y-4">
-          <div className="rounded-2xl border border-border bg-surface p-4">
+        <div className="space-y-3 sm:space-y-4">
+          <div className="rounded-2xl border border-border bg-surface p-3 sm:p-4">
             <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-muted-foreground">Pakistan Stock Exchange</p>
-                <p className="mt-2 text-3xl font-bold tracking-tight text-foreground">
+                <p className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.18em] sm:tracking-[0.24em] text-muted-foreground">Pakistan Stock Exchange</p>
+                <p className="mt-2 text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
                   {data.current.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </p>
               </div>
-              <div className={`inline-flex w-fit items-center gap-2 rounded-full px-3 py-1.5 text-sm font-semibold ${isUp ? "bg-gain-bg text-gain" : isDown ? "bg-loss-bg text-loss" : "bg-muted text-muted-foreground"}`}>
-                {isUp ? <TrendingUp className="h-4 w-4" /> : isDown ? <TrendingDown className="h-4 w-4" /> : <Minus className="h-4 w-4" />}
+              <div className={`inline-flex w-fit items-center gap-1.5 sm:gap-2 rounded-full px-2.5 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm font-semibold ${isUp ? "bg-gain-bg text-gain" : isDown ? "bg-loss-bg text-loss" : "bg-muted text-muted-foreground"}`}>
+                {isUp ? <TrendingUp className="h-3.5 w-3.5 sm:h-4 sm:w-4" /> : isDown ? <TrendingDown className="h-3.5 w-3.5 sm:h-4 sm:w-4" /> : <Minus className="h-3.5 w-3.5 sm:h-4 sm:w-4" />}
                 <span>
                   {isUp ? "+" : isDown ? "-" : ""}
                   {Math.abs(data.change).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}

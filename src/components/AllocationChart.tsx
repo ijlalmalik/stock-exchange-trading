@@ -30,19 +30,19 @@ export function AllocationChart({ holdings }: { holdings: StockHolding[] }) {
     }));
 
   return (
-    <div className="animate-fade-in rounded-xl border border-border bg-card p-5">
+    <div className="animate-fade-in rounded-xl border border-border bg-card p-3.5 sm:p-5">
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Portfolio Allocation</h3>
-          <p className="text-xs text-muted-foreground">Total: PKR {total.toLocaleString()}</p>
+          <h3 className="text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-muted-foreground">Portfolio Allocation</h3>
+          <p className="text-[11px] sm:text-xs text-muted-foreground">Total: PKR {total.toLocaleString()}</p>
         </div>
       </div>
-      <div className="flex flex-col items-center gap-6 lg:flex-row">
+      <div className="flex flex-col items-center gap-5 lg:flex-row lg:gap-6">
         {/* Donut Chart */}
-        <div className="relative w-full max-w-[220px]">
-          <ResponsiveContainer width="100%" height={220}>
+        <div className="relative w-full max-w-[200px] sm:max-w-[220px]">
+          <ResponsiveContainer width="100%" height={200}>
             <PieChart>
-              <Pie data={data} dataKey="currentValue" nameKey="script" cx="50%" cy="50%" innerRadius={60} outerRadius={95} paddingAngle={2} strokeWidth={0}>
+              <Pie data={data} dataKey="currentValue" nameKey="script" cx="50%" cy="50%" innerRadius={55} outerRadius={88} paddingAngle={2} strokeWidth={0}>
                 {data.map((_, i) => (
                   <Cell key={i} fill={COLORS[i % COLORS.length]} />
                 ))}
@@ -53,8 +53,8 @@ export function AllocationChart({ holdings }: { holdings: StockHolding[] }) {
           {/* Center text */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             <div className="text-center">
-              <p className="text-xs text-muted-foreground">Stocks</p>
-              <p className="text-xl font-bold text-foreground">{holdings.length}</p>
+              <p className="text-[11px] text-muted-foreground">Stocks</p>
+              <p className="text-lg sm:text-xl font-bold text-foreground">{holdings.length}</p>
             </div>
           </div>
         </div>
