@@ -161,8 +161,8 @@ export function HoldingsManager() {
                 </div>
               )}
 
-              <div className="rounded-xl border border-border overflow-hidden">
-                <table className="w-full text-sm">
+              <div className="rounded-xl border border-border overflow-x-auto">
+                <table className="w-full min-w-[480px] text-sm whitespace-nowrap">
                   <thead>
                     <tr className="bg-surface border-b border-border">
                       <th className="px-3 py-2 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Symbol</th>
