@@ -50,11 +50,11 @@ function PortfolioPage() {
   const totalChange = totalCurrent - totalBook;
 
   return (
-    <div className="animate-fade-in space-y-5">
+    <div className="animate-fade-in space-y-4 sm:space-y-5">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Portfolio</h1>
-          <p className="text-sm text-muted-foreground">Detailed view of all holdings</p>
+          <p className="text-xs sm:text-sm text-muted-foreground">Detailed view of all holdings</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <HoldingsManager />
@@ -103,8 +103,8 @@ function PortfolioPage() {
           <p className="text-sm text-muted-foreground">No stocks found matching "{searchQuery}"</p>
         </div>
       ) : viewMode === "list" ? (
-        <div className="animate-fade-in overflow-x-auto rounded-xl border border-border bg-card">
-          <table className="w-full text-sm">
+        <div className="animate-fade-in -mx-3 sm:mx-0 overflow-x-auto rounded-none sm:rounded-xl border-y sm:border border-border bg-card">
+          <table className="w-full min-w-[900px] text-sm whitespace-nowrap">
             <thead>
               <tr className="border-b border-border bg-surface">
                 <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">#</th>
@@ -173,7 +173,7 @@ function PortfolioPage() {
         </div>
       ) : (
         /* Grid View */
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map((h, idx) => (
             <div
               key={h.script}

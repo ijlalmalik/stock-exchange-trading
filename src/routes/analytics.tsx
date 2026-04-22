@@ -171,7 +171,7 @@ function AnalyticsPage() {
       </div>
 
       {/* Top stat cards (kept) */}
-      <div className="grid gap-4 md:grid-cols-4">
+      <div className="grid gap-3 sm:gap-4 grid-cols-2 md:grid-cols-4">
         <div className="animate-fade-in rounded-xl border border-border bg-card p-4 transition-all hover:shadow-md" style={{ animationDelay: "0ms" }}>
           <div className="flex items-center gap-2 text-muted-foreground">
             <Target className="h-4 w-4" />
@@ -209,7 +209,7 @@ function AnalyticsPage() {
       </div>
 
       {/* Portfolio Overview */}
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-3 sm:gap-4 grid-cols-1 md:grid-cols-3">
         <div className="rounded-xl border border-border bg-card p-5 transition-all hover:shadow-md">
           <div className="flex items-center gap-2 text-muted-foreground">
             <Wallet className="h-4 w-4" />
@@ -339,8 +339,8 @@ function AnalyticsPage() {
             <p className="text-xs text-muted-foreground">Click headers to sort</p>
           </div>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+        <div className="-mx-2 sm:mx-0 overflow-x-auto">
+          <table className="w-full min-w-[640px] text-sm whitespace-nowrap">
             <thead>
               <tr className="border-b border-border text-left text-xs uppercase tracking-wider text-muted-foreground">
                 <th className="py-2 pr-3 cursor-pointer hover:text-foreground" onClick={() => toggleSort("name")}>
