@@ -51,7 +51,13 @@ export function ViewModeFloating() {
     "inline-flex h-11 w-11 items-center justify-center rounded-full border border-border bg-card/80 text-foreground shadow-lg backdrop-blur-xl transition-all duration-200 hover:scale-105 hover:text-primary hover:shadow-primary/30 hover:border-primary/50";
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 flex flex-col items-center gap-2">
+    <div
+      className="fixed z-50 flex flex-col items-center gap-2"
+      style={{
+        right: "max(16px, env(safe-area-inset-right))",
+        bottom: "max(16px, env(safe-area-inset-bottom))",
+      }}
+    >
       <button
         data-no-glass
         onClick={toggleTheme}
