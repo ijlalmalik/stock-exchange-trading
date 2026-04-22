@@ -135,7 +135,7 @@ function AppShell() {
         <div className={forceMobile ? "" : "lg:hidden"}>
           <MobileHeader onMenuClick={() => setSidebarOpen(true)} />
         </div>
-        <main className="flex-1 p-4 sm:p-5 lg:p-6">
+        <main className="flex-1 min-w-0 p-4 pb-24 sm:p-5 sm:pb-24 lg:p-6 lg:pb-6">
           <Outlet />
         </main>
       </div>
