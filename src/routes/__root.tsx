@@ -129,13 +129,13 @@ function AppShell() {
 
   // welcomeState === "done" — dashboard mounts now, never before
   return (
-    <div className={`flex min-h-screen ${forceMobile ? "mx-auto max-w-[430px] border-x border-border shadow-2xl" : ""}`}>
+    <div className={`flex min-h-screen w-full ${forceMobile ? "mx-auto max-w-[430px] border-x border-border shadow-2xl" : ""}`}>
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-      <div className={`flex flex-1 flex-col min-w-0 ${forceMobile ? "" : "lg:ml-56"}`}>
+      <div className={`flex flex-1 flex-col min-w-0 w-full ${forceMobile ? "" : "lg:ml-56"}`}>
         <div className={forceMobile ? "" : "lg:hidden"}>
           <MobileHeader onMenuClick={() => setSidebarOpen(true)} />
         </div>
-        <main className="flex-1 min-w-0 p-4 pb-24 sm:p-5 sm:pb-24 lg:p-6 lg:pb-6">
+        <main className="flex-1 min-w-0 w-full p-3 pb-28 sm:p-5 sm:pb-24 lg:p-6 lg:pb-6">
           <Outlet />
         </main>
       </div>
