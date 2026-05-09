@@ -42,6 +42,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
         }`}
       />
       <aside
+        data-open={open ? "true" : "false"}
         className={`fixed inset-y-0 left-0 z-50 flex w-56 flex-col border-r border-border bg-sidebar/90 backdrop-blur-xl transition-transform duration-300 ${desktopOpenClass} ${
           open ? "translate-x-0" : "-translate-x-full"
         }`}
