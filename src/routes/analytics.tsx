@@ -433,18 +433,6 @@ function AnalyticsPage() {
               Your portfolio is <span className={`font-bold ${summary.returnPct >= 0 ? "text-gain" : "text-loss"}`}>{summary.returnPct >= 0 ? "up" : "down"} {Math.abs(summary.returnPct).toFixed(2)}%</span> overall — {summary.totalPnL >= 0 ? "+" : ""}{formatPKR(summary.totalPnL)}.
             </p>
           </div>
-          <div className="rounded-lg border border-gain/30 bg-gain-bg/30 p-4">
-            <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Top Contributor</div>
-            <p className="mt-1 text-sm">
-              <span className="font-bold text-foreground">{best?.script}</span> leads with <span className="font-bold text-gain">+{best?.changePercent.toFixed(2)}%</span>.
-            </p>
-          </div>
-          <div className="rounded-lg border border-loss/30 bg-loss-bg/30 p-4">
-            <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Underperformer</div>
-            <p className="mt-1 text-sm">
-              <span className="font-bold text-foreground">{worst?.script}</span> is at <span className="font-bold text-loss">{worst?.changePercent.toFixed(2)}%</span> — review or hold.
-            </p>
-          </div>
           <div className={`rounded-lg border p-4 ${concentrationWarning ? "border-amber-500/40 bg-amber-500/10" : "border-border bg-surface"}`}>
             <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Concentration</div>
             <p className="mt-1 text-sm">
