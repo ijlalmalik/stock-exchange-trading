@@ -10,7 +10,6 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WelcomeRouteImport } from './routes/welcome'
-import { Route as SheetRouteImport } from './routes/sheet'
 import { Route as PortfolioRouteImport } from './routes/portfolio'
 import { Route as LdcpRouteImport } from './routes/ldcp'
 import { Route as AnalyticsRouteImport } from './routes/analytics'
@@ -19,11 +18,6 @@ import { Route as IndexRouteImport } from './routes/index'
 const WelcomeRoute = WelcomeRouteImport.update({
   id: '/welcome',
   path: '/welcome',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SheetRoute = SheetRouteImport.update({
-  id: '/sheet',
-  path: '/sheet',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PortfolioRoute = PortfolioRouteImport.update({
@@ -52,7 +46,6 @@ export interface FileRoutesByFullPath {
   '/analytics': typeof AnalyticsRoute
   '/ldcp': typeof LdcpRoute
   '/portfolio': typeof PortfolioRoute
-  '/sheet': typeof SheetRoute
   '/welcome': typeof WelcomeRoute
 }
 export interface FileRoutesByTo {
@@ -60,7 +53,6 @@ export interface FileRoutesByTo {
   '/analytics': typeof AnalyticsRoute
   '/ldcp': typeof LdcpRoute
   '/portfolio': typeof PortfolioRoute
-  '/sheet': typeof SheetRoute
   '/welcome': typeof WelcomeRoute
 }
 export interface FileRoutesById {
@@ -69,22 +61,14 @@ export interface FileRoutesById {
   '/analytics': typeof AnalyticsRoute
   '/ldcp': typeof LdcpRoute
   '/portfolio': typeof PortfolioRoute
-  '/sheet': typeof SheetRoute
   '/welcome': typeof WelcomeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/analytics' | '/ldcp' | '/portfolio' | '/sheet' | '/welcome'
+  fullPaths: '/' | '/analytics' | '/ldcp' | '/portfolio' | '/welcome'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/analytics' | '/ldcp' | '/portfolio' | '/sheet' | '/welcome'
-  id:
-    | '__root__'
-    | '/'
-    | '/analytics'
-    | '/ldcp'
-    | '/portfolio'
-    | '/sheet'
-    | '/welcome'
+  to: '/' | '/analytics' | '/ldcp' | '/portfolio' | '/welcome'
+  id: '__root__' | '/' | '/analytics' | '/ldcp' | '/portfolio' | '/welcome'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -92,7 +76,6 @@ export interface RootRouteChildren {
   AnalyticsRoute: typeof AnalyticsRoute
   LdcpRoute: typeof LdcpRoute
   PortfolioRoute: typeof PortfolioRoute
-  SheetRoute: typeof SheetRoute
   WelcomeRoute: typeof WelcomeRoute
 }
 
@@ -103,13 +86,6 @@ declare module '@tanstack/react-router' {
       path: '/welcome'
       fullPath: '/welcome'
       preLoaderRoute: typeof WelcomeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sheet': {
-      id: '/sheet'
-      path: '/sheet'
-      fullPath: '/sheet'
-      preLoaderRoute: typeof SheetRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/portfolio': {
@@ -148,9 +124,17 @@ const rootRouteChildren: RootRouteChildren = {
   AnalyticsRoute: AnalyticsRoute,
   LdcpRoute: LdcpRoute,
   PortfolioRoute: PortfolioRoute,
-  SheetRoute: SheetRoute,
   WelcomeRoute: WelcomeRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
