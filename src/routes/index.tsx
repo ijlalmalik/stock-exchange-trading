@@ -9,6 +9,7 @@ import { TopMovers } from "@/components/TopMovers";
 import { KSE100Ticker } from "@/components/KSE100Ticker";
 import { RefreshButton } from "@/components/RefreshButton";
 import { HoldingsManager } from "@/components/HoldingsManager";
+import { MainSheetButton } from "@/components/MainSheetButton";
 
 export const Route = createFileRoute("/")({
   component: Dashboard,
@@ -37,6 +38,7 @@ function Dashboard() {
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <HoldingsManager />
+          <MainSheetButton />
           <RefreshButton />
         </div>
       </div>
