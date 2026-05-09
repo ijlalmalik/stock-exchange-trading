@@ -351,8 +351,11 @@
     max-width: 430px;
     margin-inline: auto;
   }
-  html.force-mobile aside {
+  html.force-mobile aside[data-open="false"] {
     transform: translateX(-100%) !important;
+  }
+  html.force-mobile aside[data-open="true"] {
+    transform: translateX(0) !important;
   }
   html.force-mobile .lg\:ml-56 { margin-left: 0 !important; }
   html.force-mobile .lg\:hidden { display: revert !important; }
