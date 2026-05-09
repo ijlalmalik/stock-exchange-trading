@@ -212,38 +212,6 @@ function AnalyticsPage() {
         </div>
       </div>
 
-      {/* Portfolio Overview */}
-      <div className="grid gap-3 sm:gap-4 grid-cols-1 md:grid-cols-3">
-        <div className="rounded-xl border border-border bg-card p-5 transition-all hover:shadow-md">
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <Wallet className="h-4 w-4" />
-            <span className="text-xs font-semibold uppercase tracking-wider">Total Investment</span>
-          </div>
-          <p className="mt-2 text-2xl font-bold text-foreground">{formatPKR(summary.totalBookValue)}</p>
-          <p className="mt-1 text-xs text-muted-foreground">Cost basis across {holdings.length} stocks</p>
-        </div>
-        <div className="rounded-xl border border-border bg-card p-5 transition-all hover:shadow-md">
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <BarChart3 className="h-4 w-4" />
-            <span className="text-xs font-semibold uppercase tracking-wider">Current Value</span>
-          </div>
-          <p className="mt-2 text-2xl font-bold text-foreground">{formatPKR(summary.totalCurrentValue)}</p>
-          <p className="mt-1 text-xs text-muted-foreground">Live market value</p>
-        </div>
-        <div className={`rounded-xl border p-5 transition-all hover:shadow-md ${summary.totalPnL >= 0 ? "border-gain/30 bg-gain-bg/30" : "border-loss/30 bg-loss-bg/30"}`}>
-          <div className="flex items-center gap-2 text-muted-foreground">
-            {summary.totalPnL >= 0 ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
-            <span className="text-xs font-semibold uppercase tracking-wider">Total Profit / Loss</span>
-          </div>
-          <p className={`mt-2 text-2xl font-bold ${summary.totalPnL >= 0 ? "text-gain" : "text-loss"}`}>
-            {summary.totalPnL >= 0 ? "+" : ""}{formatPKR(summary.totalPnL)}
-          </p>
-          <p className={`mt-1 text-xs font-semibold ${summary.returnPct >= 0 ? "text-gain" : "text-loss"}`}>
-            {summary.returnPct >= 0 ? "+" : ""}{summary.returnPct.toFixed(2)}%
-          </p>
-        </div>
-      </div>
-
       {/* Growth + Allocation */}
       <div className="grid gap-4 lg:grid-cols-3">
         <div className="rounded-xl border border-border bg-card p-5 lg:col-span-2">
