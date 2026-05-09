@@ -1,5 +1,5 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { LayoutDashboard, Briefcase, BarChart3, Radio, Sun, Moon, FileSpreadsheet, X } from "lucide-react";
+import { LayoutDashboard, Briefcase, BarChart3, Radio, Sun, Moon, X } from "lucide-react";
 import { useTheme, type Theme } from "@/lib/theme";
 import { useViewMode } from "@/lib/view-mode";
 import { SettingsPanel } from "@/components/SettingsPanel";
@@ -9,7 +9,6 @@ const NAV = [
   { to: "/portfolio", label: "Portfolio", icon: Briefcase },
   { to: "/analytics", label: "Analytics", icon: BarChart3 },
   { to: "/ldcp", label: "LDCP Live", icon: Radio },
-  { to: "/sheet", label: "Sheet", icon: FileSpreadsheet },
 ] as const;
 
 const THEMES: { id: Theme; icon: typeof Sun; label: string }[] = [
@@ -43,7 +42,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
       />
       <aside
         data-open={open ? "true" : "false"}
-        className={`fixed inset-y-0 left-0 z-50 flex w-56 flex-col border-r border-border bg-sidebar/90 backdrop-blur-xl transition-transform duration-300 ${desktopOpenClass} ${
+        className={`fixed inset-y-0 left-0 z-50 flex h-screen w-56 flex-col overflow-hidden border-r border-border bg-sidebar/90 backdrop-blur-xl transition-transform duration-300 ${desktopOpenClass} ${
           open ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -63,7 +62,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
             <X className="h-4 w-4" />
           </button>
         </div>
-        <nav className="flex-1 px-3 py-2">
+        <nav className="flex-1 overflow-hidden px-3 py-2">
           {NAV.map((item) => {
             const active = item.to === "/" ? location.pathname === "/" : location.pathname.startsWith(item.to);
             return (
