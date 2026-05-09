@@ -25,6 +25,7 @@ import {
 import { getPortfolioSummary } from "@/lib/google-sheets";
 import { usePortfolio } from "@/lib/portfolio-store";
 import { RefreshButton } from "@/components/RefreshButton";
+import { MainSheetButton } from "@/components/MainSheetButton";
 
 export const Route = createFileRoute("/analytics")({
   component: AnalyticsPage,
@@ -167,7 +168,10 @@ function AnalyticsPage() {
           <h1 className="text-2xl font-bold text-foreground">Analytics</h1>
           <p className="text-sm text-muted-foreground">A clean view of your portfolio performance</p>
         </div>
-        <RefreshButton />
+        <div className="flex flex-wrap items-center gap-2">
+          <MainSheetButton />
+          <RefreshButton />
+        </div>
       </div>
 
       {/* Top stat cards (kept) */}

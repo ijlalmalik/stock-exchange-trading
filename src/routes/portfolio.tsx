@@ -4,6 +4,7 @@ import { usePortfolio } from "@/lib/portfolio-store";
 import { ArrowUpRight, ArrowDownRight, Search, LayoutGrid, List, X } from "lucide-react";
 import { RefreshButton } from "@/components/RefreshButton";
 import { HoldingsManager } from "@/components/HoldingsManager";
+import { MainSheetButton } from "@/components/MainSheetButton";
 
 type PortfolioSearch = { highlight?: string };
 
@@ -58,6 +59,7 @@ function PortfolioPage() {
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <HoldingsManager />
+          <MainSheetButton />
           <RefreshButton />
         </div>
       </div>
