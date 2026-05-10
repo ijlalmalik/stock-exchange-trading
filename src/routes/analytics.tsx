@@ -382,6 +382,11 @@ function AnalyticsPage() {
             <span className="inline-flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-gain" /> High</span>
           </div>
         </div>
+        {holdings.length === 0 ? (
+          <div className="flex h-32 items-center justify-center text-sm text-muted-foreground">
+            No holdings to display
+          </div>
+        ) : (
         <div className="grid gap-4 md:grid-cols-2">
           {holdings.map((h, idx) => {
             const range = Math.max(h.week52High - h.week52Low, 0.0001);
