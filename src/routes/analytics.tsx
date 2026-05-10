@@ -430,6 +430,7 @@ function AnalyticsPage() {
             );
           })}
         </div>
+        )}
       </div>
 
       {/* Insights */}
