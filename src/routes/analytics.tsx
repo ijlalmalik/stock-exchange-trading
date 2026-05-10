@@ -78,8 +78,11 @@ function AnalyticsPage() {
     [holdings],
   );
 
-  const best = perfData[0];
-  const worst = perfData[perfData.length - 1];
+  const allSame =
+    perfData.length === 0 ||
+    perfData.every((p) => p.changePercent === perfData[0].changePercent);
+  const best = allSame ? null : perfData[0];
+  const worst = allSame ? null : perfData[perfData.length - 1];
 
   // Synthetic growth series (deterministic) ending at totalCurrentValue
   const growthData = useMemo(() => {
@@ -166,7 +169,7 @@ function AnalyticsPage() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Analytics</h1>
-          <p className="text-sm text-muted-foreground">A clean view of your portfolio performance</p>
+          <p className="text-xs sm:text-sm text-muted-foreground">A clean view of your portfolio performance</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <MainSheetButton />
@@ -174,15 +177,15 @@ function AnalyticsPage() {
         </div>
       </div>
 
-      {/* Top stat cards (kept) */}
-      <div className="grid gap-3 sm:gap-4 grid-cols-2 md:grid-cols-4">
+      {/* Top stat cards */}
+      <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-4">
         <div className="animate-fade-in rounded-xl border border-border bg-card p-4 transition-all hover:shadow-md" style={{ animationDelay: "0ms" }}>
           <div className="flex items-center gap-2 text-muted-foreground">
             <Target className="h-4 w-4" />
             <span className="text-xs font-semibold uppercase tracking-wider">Best Performer</span>
           </div>
           <p className="mt-2 text-lg font-bold text-gain">
-            {best?.script} ({best?.changePercent >= 0 ? "+" : ""}{best?.changePercent.toFixed(2)}%)
+            {best ? `${best.script} (${best.changePercent >= 0 ? "+" : ""}${best.changePercent.toFixed(2)}%)` : "—"}
           </p>
         </div>
         <div className="animate-fade-in rounded-xl border border-border bg-card p-4 transition-all hover:shadow-md" style={{ animationDelay: "80ms" }}>
@@ -191,17 +194,15 @@ function AnalyticsPage() {
             <span className="text-xs font-semibold uppercase tracking-wider">Worst Performer</span>
           </div>
           <p className="mt-2 text-lg font-bold text-loss">
-            {worst?.script} ({worst?.changePercent.toFixed(2)}%)
+            {worst ? `${worst.script} (${worst.changePercent.toFixed(2)}%)` : "—"}
           </p>
         </div>
         <div className="animate-fade-in rounded-xl border border-border bg-card p-4 transition-all hover:shadow-md" style={{ animationDelay: "160ms" }}>
           <div className="flex items-center gap-2 text-muted-foreground">
-            <TrendingUp className="h-4 w-4" />
-            <span className="text-xs font-semibold uppercase tracking-wider">Return %</span>
+            <Wallet className="h-4 w-4" />
+            <span className="text-xs font-semibold uppercase tracking-wider">Portfolio Value</span>
           </div>
-          <p className={`mt-2 text-lg font-bold ${summary.returnPct >= 0 ? "text-gain" : "text-loss"}`}>
-            {summary.returnPct >= 0 ? "+" : ""}{summary.returnPct.toFixed(2)}%
-          </p>
+          <p className="mt-2 text-lg font-bold text-foreground">{formatPKR(summary.totalCurrentValue)}</p>
         </div>
         <div className="animate-fade-in rounded-xl border border-border bg-card p-4 transition-all hover:shadow-md" style={{ animationDelay: "240ms" }}>
           <div className="flex items-center gap-2 text-muted-foreground">
