@@ -41,7 +41,6 @@ export function MobileHeader({ onMenuClick }: MobileHeaderProps) {
 
 /**
  * Floating quick-controls — bottom-right corner.
- * Two small circular 1:1 buttons stacked vertically. Always visible.
  */
 export function ViewModeFloating() {
   const { mode, toggleMode } = useViewMode();

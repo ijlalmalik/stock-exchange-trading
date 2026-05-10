@@ -18,7 +18,10 @@ export const Route = createFileRoute("/portfolio")({
 function PortfolioPage() {
   const { highlight } = Route.useSearch();
   const { holdings, loading } = usePortfolio();
-  const [viewMode, setViewMode] = useState<"list" | "grid">("list");
+  const [viewMode, setViewMode] = useState<"list" | "grid">(() => {
+    if (typeof window !== "undefined" && window.innerWidth < 1024) return "grid";
+    return "list";
+  });
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
@@ -64,7 +67,7 @@ function PortfolioPage() {
         </div>
       </div>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="text-xs text-muted-foreground">{holdings.length} holdings</div>
+        <div className="text-xs text-muted-foreground">{filtered.length} holdings</div>
         <div className="flex flex-wrap items-center gap-2">
           {/* Search */}
           <div className="relative flex-1 sm:flex-initial">
