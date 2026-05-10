@@ -1,21 +1,8 @@
 import { useState } from "react";
-import { Settings2, RotateCcw, X, Sun, Moon } from "lucide-react";
-import { useCustomization, ACCENT_PRESETS, type ButtonStyle, type TabStyle } from "@/lib/customization";
+import { Settings2, RotateCcw, X } from "lucide-react";
+import { useCustomization, ACCENT_PRESETS } from "@/lib/customization";
 import { useTheme, type Theme } from "@/lib/theme";
-
-const BUTTON_STYLES: { id: ButtonStyle; label: string }[] = [
-  { id: "default", label: "Default" },
-  { id: "pill", label: "Pill" },
-  { id: "square", label: "Square" },
-  { id: "glass", label: "Glass" },
-];
-
-const TAB_STYLES: { id: TabStyle; label: string }[] = [
-  { id: "default", label: "Default" },
-  { id: "pill", label: "Pill" },
-  { id: "underline", label: "Underline" },
-  { id: "glass", label: "Glass" },
-];
+import { Sun, Moon } from "lucide-react";
 
 const THEMES: { id: Theme; icon: typeof Sun; label: string }[] = [
   { id: "dark", icon: Moon, label: "Dark" },
@@ -48,12 +35,14 @@ export function SettingsPanel({ variant = "icon", className = "" }: SettingsPane
       </button>
 
       {open && (
-        <>
-          <div
-            onClick={() => setOpen(false)}
-            className="fixed inset-0 z-[60] bg-black/50 backdrop-blur-sm animate-fade-in"
-          />
-          <aside className="fixed inset-y-0 right-0 z-[70] flex w-full max-w-sm flex-col border-l border-border bg-card shadow-2xl animate-fade-in overflow-y-auto">
+        <div
+          onClick={() => setOpen(false)}
+          className="fixed inset-0 z-[70] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fade-in"
+        >
+          <aside
+            onClick={(e) => e.stopPropagation()}
+            className="relative flex max-h-[90vh] w-full max-w-[480px] flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-2xl animate-scale-in"
+          >
             <header className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-card/95 px-5 py-4 backdrop-blur-xl">
               <div className="flex items-center gap-2">
                 <Settings2 className="h-4 w-4 text-primary" />
@@ -77,10 +66,9 @@ export function SettingsPanel({ variant = "icon", className = "" }: SettingsPane
               </div>
             </header>
 
-            <div className="space-y-6 px-5 py-5">
-              {/* Theme */}
+            <div className="space-y-6 overflow-y-auto px-5 py-5">
               <Section label="Theme">
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-2 gap-2">
                   {THEMES.map((t) => {
                     const active = theme === t.id;
                     return (
@@ -101,37 +89,6 @@ export function SettingsPanel({ variant = "icon", className = "" }: SettingsPane
                 </div>
               </Section>
 
-              {/* Button style */}
-              <Section label="Button style">
-                <div className="grid grid-cols-2 gap-2">
-                  {BUTTON_STYLES.map((b) => (
-                    <Chip
-                      key={b.id}
-                      active={c.buttonStyle === b.id}
-                      onClick={() => c.set("buttonStyle", b.id)}
-                    >
-                      {b.label}
-                    </Chip>
-                  ))}
-                </div>
-              </Section>
-
-              {/* Tab style */}
-              <Section label="Tab style">
-                <div className="grid grid-cols-2 gap-2">
-                  {TAB_STYLES.map((t) => (
-                    <Chip
-                      key={t.id}
-                      active={c.tabStyle === t.id}
-                      onClick={() => c.set("tabStyle", t.id)}
-                    >
-                      {t.label}
-                    </Chip>
-                  ))}
-                </div>
-              </Section>
-
-              {/* Radius */}
               <Slider
                 label="Corner radius"
                 value={c.radius}
@@ -141,7 +98,6 @@ export function SettingsPanel({ variant = "icon", className = "" }: SettingsPane
                 onChange={(v) => c.set("radius", v)}
               />
 
-              {/* Accent presets */}
               <Section label="Accent color">
                 <div className="mb-2 flex flex-wrap gap-2">
                   {ACCENT_PRESETS.map((p) => {
@@ -173,7 +129,6 @@ export function SettingsPanel({ variant = "icon", className = "" }: SettingsPane
                 />
               </Section>
 
-              {/* Animation speed */}
               <Slider
                 label="Animation speed"
                 value={c.animationSpeed}
@@ -184,7 +139,6 @@ export function SettingsPanel({ variant = "icon", className = "" }: SettingsPane
                 onChange={(v) => c.set("animationSpeed", v)}
               />
 
-              {/* Glass blur */}
               <Slider
                 label="Glass blur"
                 value={c.glassBlur}
@@ -194,7 +148,6 @@ export function SettingsPanel({ variant = "icon", className = "" }: SettingsPane
                 onChange={(v) => c.set("glassBlur", v)}
               />
 
-              {/* Glass opacity */}
               <Slider
                 label="Glass opacity"
                 value={c.glassOpacity}
@@ -204,18 +157,6 @@ export function SettingsPanel({ variant = "icon", className = "" }: SettingsPane
                 onChange={(v) => c.set("glassOpacity", v)}
               />
 
-              {/* Density */}
-              <Section label="Density">
-                <div className="grid grid-cols-3 gap-2">
-                  {(["compact", "cozy", "comfortable"] as const).map((d) => (
-                    <Chip key={d} active={c.density === d} onClick={() => c.set("density", d)}>
-                      {d.charAt(0).toUpperCase() + d.slice(1)}
-                    </Chip>
-                  ))}
-                </div>
-              </Section>
-
-              {/* Reduced motion */}
               <Section label="Motion">
                 <label className="flex items-center justify-between rounded-lg border border-border bg-surface px-3 py-2.5 text-xs">
                   <span className="text-foreground">Reduce motion</span>
@@ -233,7 +174,7 @@ export function SettingsPanel({ variant = "icon", className = "" }: SettingsPane
               </p>
             </div>
           </aside>
-        </>
+        </div>
       )}
     </>
   );
@@ -247,30 +188,6 @@ function Section({ label, children }: { label: string; children: React.ReactNode
       </p>
       {children}
     </div>
-  );
-}
-
-function Chip({
-  active,
-  onClick,
-  children,
-}: {
-  active: boolean;
-  onClick: () => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      data-no-glass
-      className={`rounded-lg border px-3 py-2 text-[11px] font-medium transition-all ${
-        active
-          ? "border-primary bg-primary text-primary-foreground shadow-sm"
-          : "border-border bg-surface text-muted-foreground hover:text-foreground hover:border-primary/40"
-      }`}
-    >
-      {children}
-    </button>
   );
 }
 

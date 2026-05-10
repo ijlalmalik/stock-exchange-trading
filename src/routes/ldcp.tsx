@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect, useCallback } from "react";
 import { Search, X, Radio } from "lucide-react";
 import { RefreshButton } from "@/components/RefreshButton";
+import { API_KEY, SHEET_ID } from "@/lib/google-sheets";
 
 interface LDCPEntry {
   symbol: string;
@@ -15,8 +16,6 @@ interface LDCPEntry {
   volume: number;
 }
 
-const API_KEY = "AIzaSyCNJmAwzoBg_HJMhQ6ujyVP2aBSkuIVW4Y";
-const SHEET_ID = "15UyH-mxMLU1BwjJpHIEav2gwDgwT4YwCAHK2vfCYgW4";
 
 function parseNum(val: string): number {
   if (!val) return 0;
