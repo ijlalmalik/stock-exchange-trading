@@ -220,17 +220,21 @@ function AnalyticsPage() {
             <div>
               <h3 className="text-sm font-bold text-foreground">Portfolio Growth</h3>
               <p className="text-xs text-muted-foreground">Total portfolio value over time</p>
+              <p className="mt-0.5 text-[10px] italic text-muted-foreground/80">Simulated data — real history not available</p>
             </div>
-            <div className="inline-flex rounded-lg border border-border bg-surface p-1">
-              {RANGES.map((r) => (
-                <button
-                  key={r.key}
-                  onClick={() => setRange(r.key)}
-                  className={`px-3 py-1 text-xs font-semibold rounded-md transition-all ${range === r.key ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
-                >
-                  {r.key}
-                </button>
-              ))}
+            <div className="flex flex-col items-end gap-1">
+              <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Illustrative range</span>
+              <div className="inline-flex rounded-lg border border-border bg-surface p-1">
+                {RANGES.map((r) => (
+                  <button
+                    key={r.key}
+                    onClick={() => setRange(r.key)}
+                    className={`px-3 py-1 text-xs font-semibold rounded-md transition-all ${range === r.key ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                  >
+                    {r.key}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
           <div className="h-64">
@@ -320,8 +324,8 @@ function AnalyticsPage() {
                   <span className="inline-flex items-center gap-1">Stock <ArrowUpDown className="h-3 w-3" /></span>
                 </th>
                 <th className="py-2 px-3 text-right">Qty</th>
-                <th className="py-2 px-3 text-right">Buy</th>
-                <th className="py-2 px-3 text-right">Current</th>
+                <th className="py-2 px-3 text-right">Avg Cost</th>
+                <th className="py-2 px-3 text-right">LDCP</th>
                 <th className="py-2 px-3 text-right cursor-pointer hover:text-foreground" onClick={() => toggleSort("value")}>
                   <span className="inline-flex items-center gap-1">Value <ArrowUpDown className="h-3 w-3" /></span>
                 </th>
