@@ -78,8 +78,11 @@ function AnalyticsPage() {
     [holdings],
   );
 
-  const best = perfData[0];
-  const worst = perfData[perfData.length - 1];
+  const allSame =
+    perfData.length === 0 ||
+    perfData.every((p) => p.changePercent === perfData[0].changePercent);
+  const best = allSame ? null : perfData[0];
+  const worst = allSame ? null : perfData[perfData.length - 1];
 
   // Synthetic growth series (deterministic) ending at totalCurrentValue
   const growthData = useMemo(() => {
@@ -166,7 +169,7 @@ function AnalyticsPage() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Analytics</h1>
-          <p className="text-sm text-muted-foreground">A clean view of your portfolio performance</p>
+          <p className="text-xs sm:text-sm text-muted-foreground">A clean view of your portfolio performance</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <MainSheetButton />
@@ -174,15 +177,15 @@ function AnalyticsPage() {
         </div>
       </div>
 
-      {/* Top stat cards (kept) */}
-      <div className="grid gap-3 sm:gap-4 grid-cols-2 md:grid-cols-4">
+      {/* Top stat cards */}
+      <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-4">
         <div className="animate-fade-in rounded-xl border border-border bg-card p-4 transition-all hover:shadow-md" style={{ animationDelay: "0ms" }}>
           <div className="flex items-center gap-2 text-muted-foreground">
             <Target className="h-4 w-4" />
             <span className="text-xs font-semibold uppercase tracking-wider">Best Performer</span>
           </div>
           <p className="mt-2 text-lg font-bold text-gain">
-            {best?.script} ({best?.changePercent >= 0 ? "+" : ""}{best?.changePercent.toFixed(2)}%)
+            {best ? `${best.script} (${best.changePercent >= 0 ? "+" : ""}${best.changePercent.toFixed(2)}%)` : "—"}
           </p>
         </div>
         <div className="animate-fade-in rounded-xl border border-border bg-card p-4 transition-all hover:shadow-md" style={{ animationDelay: "80ms" }}>
@@ -191,17 +194,15 @@ function AnalyticsPage() {
             <span className="text-xs font-semibold uppercase tracking-wider">Worst Performer</span>
           </div>
           <p className="mt-2 text-lg font-bold text-loss">
-            {worst?.script} ({worst?.changePercent.toFixed(2)}%)
+            {worst ? `${worst.script} (${worst.changePercent.toFixed(2)}%)` : "—"}
           </p>
         </div>
         <div className="animate-fade-in rounded-xl border border-border bg-card p-4 transition-all hover:shadow-md" style={{ animationDelay: "160ms" }}>
           <div className="flex items-center gap-2 text-muted-foreground">
-            <TrendingUp className="h-4 w-4" />
-            <span className="text-xs font-semibold uppercase tracking-wider">Return %</span>
+            <Wallet className="h-4 w-4" />
+            <span className="text-xs font-semibold uppercase tracking-wider">Portfolio Value</span>
           </div>
-          <p className={`mt-2 text-lg font-bold ${summary.returnPct >= 0 ? "text-gain" : "text-loss"}`}>
-            {summary.returnPct >= 0 ? "+" : ""}{summary.returnPct.toFixed(2)}%
-          </p>
+          <p className="mt-2 text-lg font-bold text-foreground">{formatPKR(summary.totalCurrentValue)}</p>
         </div>
         <div className="animate-fade-in rounded-xl border border-border bg-card p-4 transition-all hover:shadow-md" style={{ animationDelay: "240ms" }}>
           <div className="flex items-center gap-2 text-muted-foreground">
@@ -219,17 +220,21 @@ function AnalyticsPage() {
             <div>
               <h3 className="text-sm font-bold text-foreground">Portfolio Growth</h3>
               <p className="text-xs text-muted-foreground">Total portfolio value over time</p>
+              <p className="mt-0.5 text-[10px] italic text-muted-foreground/80">Simulated data — real history not available</p>
             </div>
-            <div className="inline-flex rounded-lg border border-border bg-surface p-1">
-              {RANGES.map((r) => (
-                <button
-                  key={r.key}
-                  onClick={() => setRange(r.key)}
-                  className={`px-3 py-1 text-xs font-semibold rounded-md transition-all ${range === r.key ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
-                >
-                  {r.key}
-                </button>
-              ))}
+            <div className="flex flex-col items-end gap-1">
+              <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Illustrative range</span>
+              <div className="inline-flex rounded-lg border border-border bg-surface p-1">
+                {RANGES.map((r) => (
+                  <button
+                    key={r.key}
+                    onClick={() => setRange(r.key)}
+                    className={`px-3 py-1 text-xs font-semibold rounded-md transition-all ${range === r.key ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                  >
+                    {r.key}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
           <div className="h-64">
@@ -319,8 +324,8 @@ function AnalyticsPage() {
                   <span className="inline-flex items-center gap-1">Stock <ArrowUpDown className="h-3 w-3" /></span>
                 </th>
                 <th className="py-2 px-3 text-right">Qty</th>
-                <th className="py-2 px-3 text-right">Buy</th>
-                <th className="py-2 px-3 text-right">Current</th>
+                <th className="py-2 px-3 text-right">Avg Cost</th>
+                <th className="py-2 px-3 text-right">LDCP</th>
                 <th className="py-2 px-3 text-right cursor-pointer hover:text-foreground" onClick={() => toggleSort("value")}>
                   <span className="inline-flex items-center gap-1">Value <ArrowUpDown className="h-3 w-3" /></span>
                 </th>
@@ -377,6 +382,11 @@ function AnalyticsPage() {
             <span className="inline-flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-gain" /> High</span>
           </div>
         </div>
+        {holdings.length === 0 ? (
+          <div className="flex h-32 items-center justify-center text-sm text-muted-foreground">
+            No holdings to display
+          </div>
+        ) : (
         <div className="grid gap-4 md:grid-cols-2">
           {holdings.map((h, idx) => {
             const range = Math.max(h.week52High - h.week52Low, 0.0001);
@@ -420,6 +430,7 @@ function AnalyticsPage() {
             );
           })}
         </div>
+        )}
       </div>
 
       {/* Insights */}

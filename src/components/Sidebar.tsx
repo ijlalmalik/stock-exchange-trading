@@ -1,6 +1,5 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { LayoutDashboard, Briefcase, BarChart3, Radio, Sun, Moon, X } from "lucide-react";
-import { useTheme, type Theme } from "@/lib/theme";
+import { LayoutDashboard, Briefcase, BarChart3, Radio, X } from "lucide-react";
 import { useViewMode } from "@/lib/view-mode";
 import { SettingsPanel } from "@/components/SettingsPanel";
 
@@ -11,11 +10,6 @@ const NAV = [
   { to: "/ldcp", label: "LDCP Live", icon: Radio },
 ] as const;
 
-const THEMES: { id: Theme; icon: typeof Sun; label: string }[] = [
-  { id: "dark", icon: Moon, label: "Dark" },
-  { id: "light", icon: Sun, label: "Light" },
-];
-
 interface SidebarProps {
   open: boolean;
   onClose: () => void;
@@ -23,17 +17,14 @@ interface SidebarProps {
 
 export function Sidebar({ open, onClose }: SidebarProps) {
   const location = useLocation();
-  const { theme, setTheme } = useTheme();
   const { mode } = useViewMode();
   const forceMobile = mode === "mobile";
 
-  // In forceMobile, sidebar always behaves like mobile drawer (no auto-open on lg)
   const desktopOpenClass = forceMobile ? "" : "lg:translate-x-0";
   const backdropHide = forceMobile ? "" : "lg:hidden";
 
   return (
     <>
-      {/* Backdrop */}
       <div
         onClick={onClose}
         className={`fixed inset-0 z-40 bg-black/50 backdrop-blur-sm transition-opacity duration-300 ${backdropHide} ${
@@ -83,30 +74,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
           })}
         </nav>
         <div className="border-t border-border px-3 py-3">
-          <p className="mb-2 px-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Theme</p>
-          <div className="flex items-center gap-1 rounded-lg border border-border bg-surface p-1">
-            {THEMES.map((t) => {
-              const active = theme === t.id;
-              return (
-                <button
-                  key={t.id}
-                  onClick={() => setTheme(t.id)}
-                  title={t.label}
-                  className={`flex flex-1 items-center justify-center gap-1 rounded-md py-1.5 text-[11px] font-medium transition-all duration-300 ${
-                    active
-                      ? "bg-primary text-primary-foreground shadow-sm"
-                      : "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground"
-                  }`}
-                >
-                  <t.icon className="h-3 w-3" />
-                  <span className="hidden xl:inline">{t.label}</span>
-                </button>
-              );
-            })}
-          </div>
-          <div className="mt-3">
-            <SettingsPanel variant="full" className="w-full justify-center" />
-          </div>
+          <SettingsPanel variant="full" className="w-full justify-center" />
         </div>
       </aside>
     </>
