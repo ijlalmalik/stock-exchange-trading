@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from "framer-motion";
+import { motion, useMotionValue, useSpring, useTransform, AnimatePresence, useAnimationControls } from "framer-motion";
 import { useEffect, useState, useMemo, useRef } from "react";
 import { TrendingUp, ArrowRight, Sparkles } from "lucide-react";
 import bullImg from "@/assets/bull-hero.png";
@@ -20,23 +20,21 @@ const TAGLINES = [
   "Precision. Power. Profit.",
 ];
 
-// Animation phase timeline (ms) — tight so the screen feels instant
+// Animation phase timeline (ms)
 const T_BOOT = 350;
-const T_RUN = 750;
+const T_RUN = 550;
 const T_STOMP = 320;
-const T_REVEAL = 500;
 
 function WelcomeScreen({ onDone }: { onDone?: () => void } = {}) {
   const navigate = useNavigate();
   const [phase, setPhase] = useState<"boot" | "run" | "stomp" | "ui">("boot");
-  // Pick tagline AFTER mount to avoid SSR/CSR hydration mismatch from Math.random()
   const [tagline, setTagline] = useState(TAGLINES[0]);
   useEffect(() => {
     setTagline(TAGLINES[Math.floor(Math.random() * TAGLINES.length)]);
   }, []);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Parallax mouse tracking
+  // Parallax
   const mx = useMotionValue(0);
   const my = useMotionValue(0);
   const sx = useSpring(mx, { stiffness: 60, damping: 20 });
@@ -47,6 +45,12 @@ function WelcomeScreen({ onDone }: { onDone?: () => void } = {}) {
   const blob1Y = useTransform(sy, (v) => v * -40);
   const blob2X = useTransform(sx, (v) => v * 30);
   const blob2Y = useTransform(sy, (v) => v * 30);
+
+  // Bull paw loop control during ui phase
+  const bullControls = useAnimationControls();
+  const shadowControls = useAnimationControls();
+  const smokeLeftControls = useAnimationControls();
+  const smokeRightControls = useAnimationControls();
 
   useEffect(() => {
     const t1 = setTimeout(() => setPhase("run"), T_BOOT);
@@ -59,6 +63,44 @@ function WelcomeScreen({ onDone }: { onDone?: () => void } = {}) {
     };
   }, []);
 
+  // Pawing + shadow + hoof-smoke loop in ui phase
+  useEffect(() => {
+    if (phase !== "ui") return;
+    let active = true;
+    const loop = async () => {
+      while (active) {
+        bullControls.start({
+          y: [0, -14, 0, -8, 0],
+          rotate: [-0.5, 0.5, -0.3, 0.3, 0],
+          transition: { duration: 1.2, ease: "easeInOut" },
+        });
+        shadowControls.start({
+          filter: [
+            "drop-shadow(0 30px 60px rgba(52,211,153,0.45)) drop-shadow(0 0 80px rgba(59,130,246,0.35))",
+            "drop-shadow(0 30px 80px rgba(52,211,153,0.8)) drop-shadow(0 0 120px rgba(255,100,30,0.5))",
+            "drop-shadow(0 30px 60px rgba(52,211,153,0.45)) drop-shadow(0 0 80px rgba(59,130,246,0.35))",
+          ],
+          transition: { duration: 1.2, ease: "easeInOut" },
+        });
+        smokeLeftControls.start({
+          scale: [0, 2.5, 2.5],
+          opacity: [0, 0.9, 0],
+          transition: { duration: 1.8, ease: "easeOut" },
+        });
+        smokeRightControls.start({
+          scale: [0, 2.5, 2.5],
+          opacity: [0, 0.9, 0],
+          transition: { duration: 1.8, ease: "easeOut" },
+        });
+        await new Promise((r) => setTimeout(r, 2200));
+      }
+    };
+    loop();
+    return () => {
+      active = false;
+    };
+  }, [phase, bullControls, shadowControls, smokeLeftControls, smokeRightControls]);
+
   const handleMouseMove = (e: React.MouseEvent) => {
     const rect = containerRef.current?.getBoundingClientRect();
     if (!rect) return;
@@ -70,11 +112,8 @@ function WelcomeScreen({ onDone }: { onDone?: () => void } = {}) {
     try {
       localStorage.setItem("welcome-seen", "1");
     } catch {}
-    if (onDone) {
-      onDone();
-    } else {
-      navigate({ to: "/" });
-    }
+    if (onDone) onDone();
+    else navigate({ to: "/" });
   };
 
   const tickers = useMemo(
@@ -89,21 +128,20 @@ function WelcomeScreen({ onDone }: { onDone?: () => void } = {}) {
     [],
   );
 
-  // Pre-compute dust particles
+  // 45 dust particles, sideways, dusty grey-brown
   const dustParticles = useMemo(
     () =>
-      Array.from({ length: 28 }).map((_, i) => ({
+      Array.from({ length: 45 }).map((_, i) => ({
         id: i,
-        angle: (i / 28) * Math.PI * 2 + (Math.random() - 0.5) * 0.5,
+        angle: (i / 45) * Math.PI * 2 + (Math.random() - 0.5) * 0.5,
         dist: 80 + Math.random() * 220,
-        size: 30 + Math.random() * 80,
+        size: 60 + Math.random() * 140,
         delay: Math.random() * 0.15,
-        duration: 1.4 + Math.random() * 1.2,
+        duration: 1.6 + Math.random() * 1.4,
       })),
     [],
   );
 
-  // Pre-compute flying notes
   const notes = useMemo(
     () =>
       Array.from({ length: 14 }).map((_, i) => ({
@@ -121,16 +159,31 @@ function WelcomeScreen({ onDone }: { onDone?: () => void } = {}) {
     [],
   );
 
+  // Continuous nostril smoke puffs in ui phase
+  const noseSmoke = useMemo(
+    () => [0, 0.4, 0.8].map((d) => d),
+    [],
+  );
+
   const showHero = phase === "stomp" || phase === "ui";
   const showUI = phase === "ui";
 
   return (
-    <div
-      ref={containerRef}
-      onMouseMove={handleMouseMove}
-      className="welcome-root fixed inset-0 z-[100] overflow-hidden bg-[#05070d] text-white"
-      style={{ fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif" }}
+    <motion.div
+      animate={
+        phase === "stomp"
+          ? { x: [0, -6, 5, -3, 2, 0], y: [0, -4, 3, -2, 1, 0] }
+          : { x: 0, y: 0 }
+      }
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      className="welcome-shake fixed inset-0 z-[100]"
     >
+      <div
+        ref={containerRef}
+        onMouseMove={handleMouseMove}
+        className="welcome-root absolute inset-0 overflow-hidden bg-[#05070d] text-white"
+        style={{ fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif" }}
+      >
       {/* Animated gradient blobs */}
       <motion.div
         style={{ x: blob1X, y: blob1Y }}
@@ -184,7 +237,7 @@ function WelcomeScreen({ onDone }: { onDone?: () => void } = {}) {
         />
       </svg>
 
-      {/* Floating tickers */}
+      {/* Floating tickers + sample data note */}
       {tickers.map((t) => (
         <motion.div
           key={t.sym}
@@ -194,8 +247,11 @@ function WelcomeScreen({ onDone }: { onDone?: () => void } = {}) {
           animate={{ opacity: [0, 0.6, 0.3], y: [20, 0, -10] }}
           transition={{ duration: 8, repeat: Infinity, delay: t.delay, ease: "easeInOut" }}
         >
-          <span className="mr-2 text-white/60">{t.sym}</span>
-          <span className="text-emerald-300/70">{t.val}</span>
+          <div>
+            <span className="mr-2 text-white/60">{t.sym}</span>
+            <span className="text-emerald-300/70">{t.val}</span>
+          </div>
+          <div className="mt-0.5 text-[8px] uppercase tracking-wider text-white/30">(sample data)</div>
         </motion.div>
       ))}
 
@@ -228,29 +284,48 @@ function WelcomeScreen({ onDone }: { onDone?: () => void } = {}) {
         )}
       </AnimatePresence>
 
-      {/* === BULL CINEMATIC LAYER (lowered so bull legs touch the card) === */}
+      {/* === BULL CINEMATIC LAYER === */}
       <div className="pointer-events-none absolute inset-x-0 top-0 z-20 flex h-[72vh] items-end justify-center pb-2 sm:h-[70vh]">
         <div className="relative h-full w-full max-w-5xl">
-          {/* Shockwave on stomp */}
+          {/* Three shockwave rings on stomp */}
           <AnimatePresence>
             {phase === "stomp" && (
-              <motion.div
-                key="shock"
-                className="absolute left-1/2 top-[62%] -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-emerald-300/70"
-                initial={{ width: 20, height: 20, opacity: 0.9 }}
-                animate={{ width: 900, height: 900, opacity: 0 }}
-                transition={{ duration: 1.2, ease: "easeOut" }}
-              />
+              <>
+                <motion.div
+                  key="shock1"
+                  className="absolute left-1/2 top-[72%] -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-emerald-300/70"
+                  initial={{ width: 20, height: 20, opacity: 0.9 }}
+                  animate={{ width: 1000, height: 1000, opacity: 0 }}
+                  transition={{ duration: 0.9, ease: "easeOut" }}
+                />
+                <motion.div
+                  key="shock2"
+                  className="absolute left-1/2 top-[72%] -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-orange-400/60"
+                  initial={{ width: 20, height: 20, opacity: 0.85 }}
+                  animate={{ width: 1400, height: 1400, opacity: 0 }}
+                  transition={{ duration: 1.3, ease: "easeOut", delay: 0.08 }}
+                />
+                <motion.div
+                  key="shock3"
+                  className="absolute left-1/2 top-[72%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/20"
+                  initial={{ width: 20, height: 20, opacity: 0.7 }}
+                  animate={{ width: 1800, height: 1800, opacity: 0 }}
+                  transition={{ duration: 1.8, ease: "easeOut", delay: 0.18 }}
+                />
+              </>
             )}
           </AnimatePresence>
+
+          {/* Hot ground impact glow */}
           <AnimatePresence>
             {phase === "stomp" && (
               <motion.div
-                key="shock2"
-                className="absolute left-1/2 top-[62%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-cyan-300/60"
-                initial={{ width: 20, height: 20, opacity: 0.8 }}
-                animate={{ width: 1200, height: 1200, opacity: 0 }}
-                transition={{ duration: 1.6, ease: "easeOut", delay: 0.1 }}
+                key="ground-glow"
+                className="absolute left-1/2 top-[76%] h-12 w-[60%] -translate-x-1/2 rounded-[50%]"
+                style={{ background: "rgba(255, 120, 30, 0.35)", filter: "blur(12px)" }}
+                initial={{ scaleX: 0, scaleY: 0, opacity: 0 }}
+                animate={{ scaleX: [0, 1.8, 1.2], scaleY: [0, 1, 0.6], opacity: [0, 1, 0.4] }}
+                transition={{ duration: 0.8, ease: "easeOut" }}
               />
             )}
           </AnimatePresence>
@@ -260,36 +335,67 @@ function WelcomeScreen({ onDone }: { onDone?: () => void } = {}) {
             {(phase === "stomp" || phase === "ui") &&
               dustParticles.map((p) => {
                 const tx = Math.cos(p.angle) * p.dist;
-                const ty = Math.sin(p.angle) * p.dist - 40; // bias upward
+                const ty = Math.sin(p.angle) * p.dist * 0.3 - 20;
                 return (
                   <motion.div
                     key={p.id}
-                    className="absolute left-1/2 top-[62%] rounded-full"
+                    className="absolute left-1/2 top-[72%] rounded-full"
                     style={{
                       width: p.size,
                       height: p.size,
                       background:
-                        "radial-gradient(circle, rgba(220,230,255,0.55), rgba(180,200,230,0.15) 60%, transparent 75%)",
+                        "radial-gradient(circle, rgba(200,180,140,0.6), rgba(180,160,120,0.2) 60%, transparent 75%)",
                       filter: "blur(6px)",
                       marginLeft: -p.size / 2,
                       marginTop: -p.size / 2,
                     }}
                     initial={{ x: 0, y: 0, opacity: 0, scale: 0.3 }}
-                    animate={{
-                      x: tx,
-                      y: ty,
-                      opacity: [0, 0.8, 0],
-                      scale: [0.3, 1, 1.6],
-                    }}
-                    transition={{
-                      duration: p.duration,
-                      delay: p.delay,
-                      ease: "easeOut",
-                    }}
+                    animate={{ x: tx, y: ty, opacity: [0, 0.8, 0], scale: [0.3, 1, 1.6] }}
+                    transition={{ duration: p.duration, delay: p.delay, ease: "easeOut" }}
                   />
                 );
               })}
           </AnimatePresence>
+
+          {/* Ground hoof smoke clouds */}
+          {(phase === "stomp" || phase === "ui") && (
+            <>
+              <motion.div
+                className="absolute top-[68%] rounded-full"
+                style={{
+                  left: "calc(50% - 80px)",
+                  width: 120,
+                  height: 60,
+                  background: "radial-gradient(ellipse, rgba(180,180,160,0.7), transparent 70%)",
+                  filter: "blur(18px)",
+                }}
+                initial={{ scale: 0, opacity: 0 }}
+                animate={
+                  phase === "stomp"
+                    ? { scale: [0, 2.5, 2.5], opacity: [0, 0.9, 0] }
+                    : smokeLeftControls
+                }
+                transition={phase === "stomp" ? { duration: 1.8, ease: "easeOut" } : undefined}
+              />
+              <motion.div
+                className="absolute top-[68%] rounded-full"
+                style={{
+                  left: "calc(50% + 30px)",
+                  width: 120,
+                  height: 60,
+                  background: "radial-gradient(ellipse, rgba(180,180,160,0.7), transparent 70%)",
+                  filter: "blur(18px)",
+                }}
+                initial={{ scale: 0, opacity: 0 }}
+                animate={
+                  phase === "stomp"
+                    ? { scale: [0, 2.5, 2.5], opacity: [0, 0.9, 0] }
+                    : smokeRightControls
+                }
+                transition={phase === "stomp" ? { duration: 1.8, ease: "easeOut" } : undefined}
+              />
+            </>
+          )}
 
           {/* Flying rupee notes */}
           <AnimatePresence>
@@ -298,13 +404,7 @@ function WelcomeScreen({ onDone }: { onDone?: () => void } = {}) {
                 <motion.div
                   key={n.id}
                   className="absolute left-1/2 top-[62%]"
-                  initial={{
-                    x: n.startX,
-                    y: n.startY,
-                    opacity: 0,
-                    rotate: 0,
-                    scale: 0.4,
-                  }}
+                  initial={{ x: n.startX, y: n.startY, opacity: 0, rotate: 0, scale: 0.4 }}
                   animate={{
                     x: n.endX,
                     y: n.endY,
@@ -312,18 +412,14 @@ function WelcomeScreen({ onDone }: { onDone?: () => void } = {}) {
                     rotate: n.rotate,
                     scale: n.scale,
                   }}
-                  transition={{
-                    duration: n.duration,
-                    delay: n.delay,
-                    ease: "easeOut",
-                  }}
+                  transition={{ duration: n.duration, delay: n.delay, ease: "easeOut" }}
                 >
                   <RupeeNote denom={n.denom} />
                 </motion.div>
               ))}
           </AnimatePresence>
 
-          {/* Bull image — anchored upper area */}
+          {/* Bull image */}
           <motion.img
             src={bullImg}
             alt="Glass bull"
@@ -332,26 +428,65 @@ function WelcomeScreen({ onDone }: { onDone?: () => void } = {}) {
               phase === "boot"
                 ? { x: "-120vw", opacity: 0 }
                 : phase === "run"
-                  ? { x: "-5%", opacity: 1, filter: "blur(2px)", scale: 1.0 }
+                  ? { x: "-5%", opacity: 1, filter: "blur(2px)", scale: 1.0, scaleX: [1, 1.05, 1] }
                   : phase === "stomp"
-                    ? { x: "0%", y: [0, -10, 8, 0], scale: [1.0, 1.03, 0.98, 1], opacity: 1, filter: "blur(0px)" }
-                    : { x: heroX as unknown as number, y: heroY as unknown as number, scale: 1, opacity: 1, filter: "blur(0px)" }
+                    ? {
+                        x: "0%",
+                        y: [0, -28, 18, -10, 5, 0],
+                        scale: [1.0, 1.06, 0.95, 1.02, 0.99, 1],
+                        rotate: [0, -1.5, 1, -0.5, 0, 0],
+                        opacity: 1,
+                        filter: [
+                          "brightness(1)",
+                          "brightness(1.4)",
+                          "brightness(1.1)",
+                          "brightness(1.2)",
+                          "brightness(1)",
+                        ],
+                      }
+                    : { x: heroX as unknown as number, y: heroY as unknown as number, scale: 1, opacity: 1 }
             }
             transition={
               phase === "run"
-                ? { duration: T_RUN / 1000, ease: [0.2, 0.7, 0.3, 1] }
+                ? { duration: T_RUN / 1000, ease: [0.1, 0.8, 0.2, 1] }
                 : phase === "stomp"
-                  ? { duration: 0.5, ease: "easeOut" }
+                  ? { duration: 0.7, ease: "easeOut" }
                   : { duration: 0.6, ease: "easeOut" }
             }
             className="absolute left-1/2 top-1/2 h-[42vh] max-h-[400px] w-auto -translate-x-1/2 -translate-y-1/2 select-none sm:h-[46vh]"
-            style={{
-              filter: showHero
-                ? "drop-shadow(0 30px 60px rgba(52,211,153,0.45)) drop-shadow(0 0 80px rgba(59,130,246,0.35))"
-                : undefined,
-            }}
             draggable={false}
           />
+
+          {/* Bull paw + glow loop overlay (ui phase) — uses same image animated by controls */}
+          {phase === "ui" && (
+            <motion.img
+              src={bullImg}
+              alt=""
+              aria-hidden
+              animate={bullControls}
+              className="absolute left-1/2 top-1/2 h-[42vh] max-h-[400px] w-auto -translate-x-1/2 -translate-y-1/2 select-none sm:h-[46vh] opacity-0 pointer-events-none"
+              draggable={false}
+            />
+          )}
+
+          {/* Drop shadow halo synced to pawing */}
+          {phase === "ui" && (
+            <motion.div
+              animate={shadowControls}
+              className="absolute left-1/2 top-[60%] h-32 w-[60%] -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+              style={{ filter: "drop-shadow(0 30px 60px rgba(52,211,153,0.45))" }}
+            />
+          )}
+
+          {/* Continuous nostril smoke (ui phase only) */}
+          {phase === "ui" &&
+            noseSmoke.map((delay) => (
+              <NostrilPuff key={`l-${delay}`} side="left" delay={delay} />
+            ))}
+          {phase === "ui" &&
+            noseSmoke.map((delay) => (
+              <NostrilPuff key={`r-${delay}`} side="right" delay={delay} />
+            ))}
 
           {/* Ground glow under bull */}
           <AnimatePresence>
@@ -367,7 +502,7 @@ function WelcomeScreen({ onDone }: { onDone?: () => void } = {}) {
         </div>
       </div>
 
-      {/* === MAIN UI — sits in lower section so bull legs visually touch the card === */}
+      {/* === MAIN UI === */}
       <div className="relative z-30 flex min-h-screen flex-col items-center justify-end px-6 pb-10 pt-[60vh]">
         <motion.div
           initial={{ opacity: 0, scale: 0.92, y: 30 }}
@@ -375,7 +510,6 @@ function WelcomeScreen({ onDone }: { onDone?: () => void } = {}) {
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           className="welcome-card relative w-full max-w-xl overflow-hidden rounded-[2rem] border border-white/20 bg-white/[0.07] p-7 sm:p-9 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.7),inset_0_1px_0_0_rgba(255,255,255,0.25)] backdrop-blur-[40px] backdrop-saturate-200"
         >
-          {/* Shimmer sweep */}
           <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[2rem]">
             <motion.div
               className="absolute -inset-x-1/2 -top-1/2 h-[200%] w-[60%] -rotate-12 bg-gradient-to-r from-transparent via-white/15 to-transparent"
@@ -461,7 +595,42 @@ function WelcomeScreen({ onDone }: { onDone?: () => void } = {}) {
           Powered by Live PSX Data
         </motion.div>
       </div>
-    </div>
+      </div>
+    </motion.div>
+  );
+}
+
+function NostrilPuff({ side, delay }: { side: "left" | "right"; delay: number }) {
+  const isLeft = side === "left";
+  const top = isLeft ? "38%" : "36%";
+  const left = isLeft ? "56%" : "59%";
+  const xDrift = isLeft ? [-0, -8, -15] : [0, 8, 15];
+  return (
+    <motion.div
+      className="absolute pointer-events-none rounded-full"
+      style={{
+        top,
+        left,
+        width: 18,
+        height: 18,
+        background: "rgba(220,220,210,0.6)",
+        filter: "blur(8px)",
+      }}
+      initial={{ y: 0, x: 0, scale: 0.4, opacity: 0 }}
+      animate={{
+        y: [0, -30, -60],
+        x: xDrift,
+        scale: [0.4, 1.2, 0.3],
+        opacity: [0, 0.8, 0],
+      }}
+      transition={{
+        duration: 1.2,
+        delay,
+        repeat: Infinity,
+        repeatDelay: 0,
+        ease: "easeOut",
+      }}
+    />
   );
 }
 
