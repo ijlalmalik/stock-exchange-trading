@@ -53,6 +53,7 @@ function LDCPPage() {
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState<"symbol" | "price" | "volume" | "idxWt">("symbol");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
+  const [visibleCount, setVisibleCount] = useState(100);
 
   const load = useCallback(() => {
     fetchLDCPData()
@@ -153,7 +154,7 @@ function LDCPPage() {
             </tr>
           </thead>
           <tbody>
-            {filtered.slice(0, 100).map((d, idx) => (
+            {filtered.slice(0, visibleCount).map((d) => (
               <tr
                 key={d.symbol}
                 className="border-b border-border transition-all duration-200 hover:bg-surface-hover"
@@ -169,9 +170,14 @@ function LDCPPage() {
             ))}
           </tbody>
         </table>
-        {filtered.length > 100 && (
-          <div className="border-t border-border bg-surface px-4 py-2 text-center text-xs text-muted-foreground">
-            Showing 100 of {filtered.length} results. Use search to narrow down.
+        {filtered.length > visibleCount && (
+          <div className="border-t border-border bg-surface px-4 py-3 text-center">
+            <button
+              onClick={() => setVisibleCount((n) => n + 100)}
+              className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2 text-xs font-semibold text-foreground transition-all hover:bg-surface-hover hover:border-primary/40"
+            >
+              Load 100 more ({filtered.length - visibleCount} remaining)
+            </button>
           </div>
         )}
       </div>
