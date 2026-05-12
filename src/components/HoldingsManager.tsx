@@ -93,11 +93,10 @@ export function HoldingsManager() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-2 rounded-lg border border-border bg-surface px-3 py-2 text-xs font-medium text-foreground transition-all duration-300 hover:bg-surface-hover hover:border-primary/40"
+        className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-border bg-surface px-3 py-2 text-xs font-medium text-foreground transition-all duration-300 hover:bg-surface-hover hover:border-primary/40 sm:w-auto"
       >
-        <Settings2 className="h-3.5 w-3.5 text-primary" />
-        <span className="hidden sm:inline">Manage Holdings</span>
-        <span className="sm:hidden">Manage</span>
+        <Settings2 className="h-3.5 w-3.5 text-primary shrink-0" />
+        <span className="truncate">Manage</span>
       </button>
 
       {open && (

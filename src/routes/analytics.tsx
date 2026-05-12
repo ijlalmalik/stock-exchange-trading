@@ -171,45 +171,45 @@ function AnalyticsPage() {
           <h1 className="text-2xl font-bold text-foreground">Analytics</h1>
           <p className="text-xs sm:text-sm text-muted-foreground">A clean view of your portfolio performance</p>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center">
           <MainSheetButton />
           <RefreshButton />
         </div>
       </div>
 
       {/* Top stat cards */}
-      <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-4">
-        <div className="animate-fade-in rounded-xl border border-border bg-card p-4 transition-all hover:shadow-md" style={{ animationDelay: "0ms" }}>
+      <div className="grid gap-3 sm:gap-4 grid-cols-2 md:grid-cols-4">
+        <div className="animate-fade-in rounded-xl border border-border bg-card p-3.5 sm:p-4 transition-all hover:shadow-md">
           <div className="flex items-center gap-2 text-muted-foreground">
-            <Target className="h-4 w-4" />
-            <span className="text-xs font-semibold uppercase tracking-wider">Best Performer</span>
+            <Target className="h-4 w-4 shrink-0" />
+            <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider">Best</span>
           </div>
-          <p className="mt-2 text-lg font-bold text-gain">
+          <p className="mt-2 text-sm sm:text-lg font-bold text-gain break-words">
             {best ? `${best.script} (${best.changePercent >= 0 ? "+" : ""}${best.changePercent.toFixed(2)}%)` : "—"}
           </p>
         </div>
-        <div className="animate-fade-in rounded-xl border border-border bg-card p-4 transition-all hover:shadow-md" style={{ animationDelay: "80ms" }}>
+        <div className="animate-fade-in rounded-xl border border-border bg-card p-3.5 sm:p-4 transition-all hover:shadow-md">
           <div className="flex items-center gap-2 text-muted-foreground">
-            <TrendingDown className="h-4 w-4" />
-            <span className="text-xs font-semibold uppercase tracking-wider">Worst Performer</span>
+            <TrendingDown className="h-4 w-4 shrink-0" />
+            <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider">Worst</span>
           </div>
-          <p className="mt-2 text-lg font-bold text-loss">
+          <p className="mt-2 text-sm sm:text-lg font-bold text-loss break-words">
             {worst ? `${worst.script} (${worst.changePercent.toFixed(2)}%)` : "—"}
           </p>
         </div>
-        <div className="animate-fade-in rounded-xl border border-border bg-card p-4 transition-all hover:shadow-md" style={{ animationDelay: "160ms" }}>
+        <div className="animate-fade-in rounded-xl border border-border bg-card p-3.5 sm:p-4 transition-all hover:shadow-md">
           <div className="flex items-center gap-2 text-muted-foreground">
-            <Wallet className="h-4 w-4" />
-            <span className="text-xs font-semibold uppercase tracking-wider">Portfolio Value</span>
+            <Wallet className="h-4 w-4 shrink-0" />
+            <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider">Value</span>
           </div>
-          <p className="mt-2 text-lg font-bold text-foreground">{formatPKR(summary.totalCurrentValue)}</p>
+          <p className="mt-2 text-sm sm:text-lg font-bold text-foreground break-words">{formatPKR(summary.totalCurrentValue)}</p>
         </div>
-        <div className="animate-fade-in rounded-xl border border-border bg-card p-4 transition-all hover:shadow-md" style={{ animationDelay: "240ms" }}>
+        <div className="animate-fade-in rounded-xl border border-border bg-card p-3.5 sm:p-4 transition-all hover:shadow-md">
           <div className="flex items-center gap-2 text-muted-foreground">
-            <BarChart3 className="h-4 w-4" />
-            <span className="text-xs font-semibold uppercase tracking-wider">Total Stocks</span>
+            <BarChart3 className="h-4 w-4 shrink-0" />
+            <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider">Stocks</span>
           </div>
-          <p className="mt-2 text-lg font-bold text-foreground">{holdings.length}</p>
+          <p className="mt-2 text-sm sm:text-lg font-bold text-foreground">{holdings.length}</p>
         </div>
       </div>
 
@@ -308,15 +308,69 @@ function AnalyticsPage() {
         </div>
       </div>
 
-      {/* Stock Performance Table */}
-      <div className="rounded-xl border border-border bg-card p-5">
+      {/* Stock Performance */}
+      <div className="rounded-xl border border-border bg-card p-3.5 sm:p-5">
         <div className="mb-4 flex items-center justify-between">
           <div>
             <h3 className="text-sm font-bold text-foreground">Stock Performance</h3>
-            <p className="text-xs text-muted-foreground">Click headers to sort</p>
+            <p className="text-xs text-muted-foreground hidden sm:block">Click headers to sort</p>
+          </div>
+          {/* Mobile sort chips */}
+          <div className="flex sm:hidden gap-1">
+            {(["pnl", "pct", "value", "name"] as const).map((k) => (
+              <button
+                key={k}
+                onClick={() => toggleSort(k)}
+                className={`btn-tight rounded-full border px-2.5 py-1 text-[10px] font-medium ${
+                  sortKey === k ? "border-primary/50 bg-primary/15 text-primary" : "border-border bg-surface text-muted-foreground"
+                }`}
+              >
+                {k.toUpperCase()}{sortKey === k ? (sortDir === "asc" ? " ↑" : " ↓") : ""}
+              </button>
+            ))}
           </div>
         </div>
-        <div className="-mx-2 sm:mx-0 overflow-x-auto">
+
+        {/* Mobile cards */}
+        <div className="grid gap-2 sm:hidden">
+          {tableRows.map((r) => {
+            const positive = r.pnl >= 0;
+            return (
+              <Link key={r.script} to="/portfolio" search={{ highlight: r.script }} className="block rounded-lg border border-border bg-surface/50 p-3">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <div className="text-sm font-bold text-foreground">{r.script}</div>
+                    <div className="truncate text-[11px] text-muted-foreground">{r.company}</div>
+                  </div>
+                  <div className={`shrink-0 text-right font-mono text-sm font-semibold ${positive ? "text-gain" : "text-loss"}`}>
+                    <div className="inline-flex items-center gap-1">
+                      {positive ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />}
+                      {positive ? "+" : ""}{r.pct.toFixed(2)}%
+                    </div>
+                    <div className="text-[10px] text-muted-foreground">{positive ? "+" : ""}{Math.round(r.pnl).toLocaleString()}</div>
+                  </div>
+                </div>
+                <div className="mt-2 grid grid-cols-3 gap-2 text-[11px]">
+                  <div>
+                    <p className="text-muted-foreground">Qty</p>
+                    <p className="font-mono text-foreground">{r.shares.toLocaleString()}</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground">LDCP</p>
+                    <p className="font-mono text-foreground">{r.current.toFixed(2)}</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground">Value</p>
+                    <p className="font-mono text-foreground">{formatPKR(r.value)}</p>
+                  </div>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+
+        {/* Desktop table */}
+        <div className="hidden sm:block overflow-x-auto">
           <table className="w-full min-w-[640px] text-sm whitespace-nowrap">
             <thead>
               <tr className="border-b border-border text-left text-xs uppercase tracking-wider text-muted-foreground">

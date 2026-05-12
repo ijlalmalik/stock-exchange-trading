@@ -1,5 +1,8 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useContext, type ReactNode } from "react";
 
+// Legacy "force mobile preview" toggle has been removed in favor of a true
+// responsive mobile-first layout. This module is kept as a no-op shim so any
+// remaining imports continue to compile.
 export type ViewMode = "auto" | "mobile";
 
 interface ViewModeContextType {
@@ -15,23 +18,10 @@ const ViewModeContext = createContext<ViewModeContextType>({
 });
 
 export function ViewModeProvider({ children }: { children: ReactNode }) {
-  const [mode, setModeState] = useState<ViewMode>("auto");
-
-  useEffect(() => {
-    const stored = localStorage.getItem("portfolio-view-mode") as ViewMode | null;
-    if (stored === "mobile" || stored === "auto") setModeState(stored);
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem("portfolio-view-mode", mode);
-    document.documentElement.classList.toggle("force-mobile", mode === "mobile");
-  }, [mode]);
-
-  const setMode = (m: ViewMode) => setModeState(m);
-  const toggleMode = () => setModeState((m) => (m === "mobile" ? "auto" : "mobile"));
-
   return (
-    <ViewModeContext.Provider value={{ mode, setMode, toggleMode }}>
+    <ViewModeContext.Provider
+      value={{ mode: "auto", setMode: () => {}, toggleMode: () => {} }}
+    >
       {children}
     </ViewModeContext.Provider>
   );

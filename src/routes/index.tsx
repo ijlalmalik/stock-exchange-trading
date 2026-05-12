@@ -35,7 +35,7 @@ function Dashboard() {
           <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
           <p className="text-xs sm:text-sm text-muted-foreground">Overview of your portfolio performance</p>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="grid grid-cols-3 gap-2 sm:flex sm:flex-wrap sm:items-center">
           <HoldingsManager />
           <MainSheetButton />
           <RefreshButton />
