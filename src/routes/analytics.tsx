@@ -171,45 +171,45 @@ function AnalyticsPage() {
           <h1 className="text-2xl font-bold text-foreground">Analytics</h1>
           <p className="text-xs sm:text-sm text-muted-foreground">A clean view of your portfolio performance</p>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center">
           <MainSheetButton />
           <RefreshButton />
         </div>
       </div>
 
       {/* Top stat cards */}
-      <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-4">
-        <div className="animate-fade-in rounded-xl border border-border bg-card p-4 transition-all hover:shadow-md" style={{ animationDelay: "0ms" }}>
+      <div className="grid gap-3 sm:gap-4 grid-cols-2 md:grid-cols-4">
+        <div className="animate-fade-in rounded-xl border border-border bg-card p-3.5 sm:p-4 transition-all hover:shadow-md">
           <div className="flex items-center gap-2 text-muted-foreground">
-            <Target className="h-4 w-4" />
-            <span className="text-xs font-semibold uppercase tracking-wider">Best Performer</span>
+            <Target className="h-4 w-4 shrink-0" />
+            <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider">Best</span>
           </div>
-          <p className="mt-2 text-lg font-bold text-gain">
+          <p className="mt-2 text-sm sm:text-lg font-bold text-gain break-words">
             {best ? `${best.script} (${best.changePercent >= 0 ? "+" : ""}${best.changePercent.toFixed(2)}%)` : "—"}
           </p>
         </div>
-        <div className="animate-fade-in rounded-xl border border-border bg-card p-4 transition-all hover:shadow-md" style={{ animationDelay: "80ms" }}>
+        <div className="animate-fade-in rounded-xl border border-border bg-card p-3.5 sm:p-4 transition-all hover:shadow-md">
           <div className="flex items-center gap-2 text-muted-foreground">
-            <TrendingDown className="h-4 w-4" />
-            <span className="text-xs font-semibold uppercase tracking-wider">Worst Performer</span>
+            <TrendingDown className="h-4 w-4 shrink-0" />
+            <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider">Worst</span>
           </div>
-          <p className="mt-2 text-lg font-bold text-loss">
+          <p className="mt-2 text-sm sm:text-lg font-bold text-loss break-words">
             {worst ? `${worst.script} (${worst.changePercent.toFixed(2)}%)` : "—"}
           </p>
         </div>
-        <div className="animate-fade-in rounded-xl border border-border bg-card p-4 transition-all hover:shadow-md" style={{ animationDelay: "160ms" }}>
+        <div className="animate-fade-in rounded-xl border border-border bg-card p-3.5 sm:p-4 transition-all hover:shadow-md">
           <div className="flex items-center gap-2 text-muted-foreground">
-            <Wallet className="h-4 w-4" />
-            <span className="text-xs font-semibold uppercase tracking-wider">Portfolio Value</span>
+            <Wallet className="h-4 w-4 shrink-0" />
+            <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider">Value</span>
           </div>
-          <p className="mt-2 text-lg font-bold text-foreground">{formatPKR(summary.totalCurrentValue)}</p>
+          <p className="mt-2 text-sm sm:text-lg font-bold text-foreground break-words">{formatPKR(summary.totalCurrentValue)}</p>
         </div>
-        <div className="animate-fade-in rounded-xl border border-border bg-card p-4 transition-all hover:shadow-md" style={{ animationDelay: "240ms" }}>
+        <div className="animate-fade-in rounded-xl border border-border bg-card p-3.5 sm:p-4 transition-all hover:shadow-md">
           <div className="flex items-center gap-2 text-muted-foreground">
-            <BarChart3 className="h-4 w-4" />
-            <span className="text-xs font-semibold uppercase tracking-wider">Total Stocks</span>
+            <BarChart3 className="h-4 w-4 shrink-0" />
+            <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider">Stocks</span>
           </div>
-          <p className="mt-2 text-lg font-bold text-foreground">{holdings.length}</p>
+          <p className="mt-2 text-sm sm:text-lg font-bold text-foreground">{holdings.length}</p>
         </div>
       </div>
 
