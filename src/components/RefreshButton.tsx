@@ -17,11 +17,11 @@ export function RefreshButton() {
       onClick={() => void refresh()}
       disabled={refreshing}
       title="Refresh all data sources"
-      className="inline-flex items-center gap-2 rounded-lg border border-border bg-surface px-3 py-2 text-xs font-medium text-foreground transition-all duration-300 hover:bg-surface-hover hover:border-primary/40 disabled:opacity-60"
+      className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-border bg-surface px-3 py-2 text-xs font-medium text-foreground transition-all duration-300 hover:bg-surface-hover hover:border-primary/40 disabled:opacity-60 sm:w-auto"
     >
-      <RefreshCw className={`h-3.5 w-3.5 text-primary ${refreshing ? "animate-spin" : ""}`} />
-      <span>{refreshing ? "Refreshing..." : "Refresh"}</span>
-      <span className="hidden sm:inline text-muted-foreground">• {timeAgo(lastUpdated)}</span>
+      <RefreshCw className={`h-3.5 w-3.5 text-primary shrink-0 ${refreshing ? "animate-spin" : ""}`} />
+      <span className="truncate">{refreshing ? "Refreshing..." : "Refresh"}</span>
+      <span className="hidden md:inline text-muted-foreground">• {timeAgo(lastUpdated)}</span>
     </button>
   );
 }
