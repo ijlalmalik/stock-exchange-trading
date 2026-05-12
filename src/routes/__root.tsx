@@ -86,9 +86,7 @@ function AppShell() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   // welcomeState: "checking" -> "show" (render welcome, dashboard NOT mounted) -> "done"
   const [welcomeState, setWelcomeState] = useState<"checking" | "show" | "done">("checking");
-  const { mode } = useViewMode();
   const location = useLocation();
-  const forceMobile = mode === "mobile";
   const isWelcomeRoute = location.pathname === "/welcome";
 
   useEffect(() => {
@@ -114,7 +112,6 @@ function AppShell() {
     return <div className="fixed inset-0 z-[100] bg-[#05070d]" />;
   }
 
-  // Welcome overlay is rendered INSTEAD of the dashboard. Dashboard does not mount.
   if (welcomeState === "show") {
     return (
       <WelcomeOverlay
@@ -128,18 +125,21 @@ function AppShell() {
     );
   }
 
-  // welcomeState === "done" — dashboard mounts now, never before
   return (
-    <div className={`flex min-h-screen w-full ${forceMobile ? "mx-auto max-w-[430px] border-x border-border shadow-2xl" : ""}`}>
+    <div className="flex min-h-screen w-full">
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-      <div className={`flex flex-1 flex-col min-w-0 w-full ${forceMobile ? "" : "lg:ml-56"}`}>
-        <div className={forceMobile ? "" : "lg:hidden"}>
+      <div className="flex flex-1 flex-col min-w-0 w-full lg:ml-56">
+        <div className="lg:hidden">
           <MobileHeader onMenuClick={() => setSidebarOpen(true)} />
         </div>
-        <main className="flex-1 min-w-0 w-full p-3 pb-28 sm:p-5 sm:pb-24 lg:p-6 lg:pb-6">
+        <main
+          className="flex-1 min-w-0 w-full px-3 pt-3 pb-24 sm:px-5 sm:pt-5 sm:pb-24 lg:px-6 lg:pt-6 lg:pb-6"
+          style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 5.5rem)" }}
+        >
           <Outlet />
         </main>
       </div>
+      <MobileBottomNav />
       <ViewModeFloating />
     </div>
   );
