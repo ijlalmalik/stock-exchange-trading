@@ -10,10 +10,10 @@ export function MainSheetButton() {
       target="_blank"
       rel="noopener noreferrer"
       title="Open the source Google Sheet"
-      className="inline-flex items-center gap-2 rounded-lg border border-border bg-surface px-3 py-2 text-xs font-medium text-foreground transition-all duration-300 hover:bg-surface-hover hover:border-primary/40 hover:-translate-y-0.5"
+      className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-border bg-surface px-3 py-2 text-xs font-medium text-foreground transition-all duration-300 hover:bg-surface-hover hover:border-primary/40 sm:w-auto sm:hover:-translate-y-0.5"
     >
-      <FileSpreadsheet className="h-3.5 w-3.5 text-primary" />
-      <span>Main Sheet</span>
+      <FileSpreadsheet className="h-3.5 w-3.5 text-primary shrink-0" />
+      <span className="truncate"><span className="sm:hidden">Sheet</span><span className="hidden sm:inline">Main Sheet</span></span>
     </a>
   );
 }
