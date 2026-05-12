@@ -318,64 +318,26 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
-    /* Respect iOS safe areas */
-    padding-bottom: env(safe-area-inset-bottom);
-    /* Prevent text auto-zoom on iOS rotate */
     -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
   }
-  /* Inner horizontally-scrollable wrappers (tables) — must scroll smoothly on mobile.
-     Page-level overflow-x is hidden, so these containers own horizontal scroll. */
+  /* Inner horizontally-scrollable wrappers (tables) */
   .overflow-x-auto {
     -webkit-overflow-scrolling: touch;
     overscroll-behavior-x: contain;
   }
-  /* Inputs at >=16px prevents iOS Safari from zooming on focus */
-  @media (max-width: 768px) {
-    input, select, textarea {
-      font-size: 16px;
-    }
-    button, a, [role="button"], [role="tab"] {
-      touch-action: manipulation;
-    }
-    button, a[class*="rounded"], [role="button"] {
-      min-height: 38px;
-    }
-    /* Soften oversized headings on phones */
-    h1 { font-size: 1.375rem !important; line-height: 1.75rem !important; }
-    /* Tighter card padding on phones */
+  /* ------------- Mobile base (≤ 640px) ------------- */
+  @media (max-width: 640px) {
+    input, select, textarea { font-size: 16px !important; }
+    button, a, [role="button"], [role="tab"] { touch-action: manipulation; }
+    button:not([data-no-glass]):not(.btn-tight),
+    a[class*="rounded"]:not(.btn-tight),
+    [role="button"]:not(.btn-tight) { min-height: 40px; }
+    h1 { font-size: 1.5rem !important; line-height: 2rem !important; letter-spacing: -0.01em; }
+    h2 { font-size: 1.25rem !important; line-height: 1.75rem !important; }
+    h3 { font-size: 1.05rem !important; line-height: 1.5rem !important; }
     .card-pad-mobile { padding: 1rem !important; }
   }
-  /* Force-mobile preview frame: pin body width and neutralise lg/xl utilities
-     so the layout matches a real phone even when the host viewport is wide. */
-  html.force-mobile body {
-    max-width: 430px;
-    margin-inline: auto;
-  }
-  html.force-mobile aside[data-open="false"] {
-    transform: translateX(-100%) !important;
-  }
-  html.force-mobile aside[data-open="true"] {
-    transform: translateX(0) !important;
-  }
-  html.force-mobile .lg\:ml-56 { margin-left: 0 !important; }
-  html.force-mobile .lg\:hidden { display: revert !important; }
-  html.force-mobile .lg\:flex,
-  html.force-mobile .lg\:block,
-  html.force-mobile .lg\:inline-flex,
-  html.force-mobile .lg\:inline-block { display: none !important; }
-  html.force-mobile .lg\:p-6 { padding: 0.75rem !important; }
-  html.force-mobile .lg\:pb-6 { padding-bottom: 7rem !important; }
-  html.force-mobile [class*="lg:grid-cols-"],
-  html.force-mobile [class*="xl:grid-cols-"],
-  html.force-mobile [class*="md:grid-cols-3"],
-  html.force-mobile [class*="md:grid-cols-4"] {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  }
-  html.force-mobile [class*="lg:grid-cols-2"] {
-    grid-template-columns: minmax(0, 1fr) !important;
-  }
-  html.force-mobile [class*="sm:flex-row"] { flex-direction: column !important; align-items: stretch !important; }
-  html.force-mobile [class*="sm:text-2xl"] { font-size: 1.125rem !important; line-height: 1.5rem !important; }
 }
 
 /* Custom scrollbar */
