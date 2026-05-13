@@ -615,3 +615,55 @@ select {
   animation-duration: 0.001ms !important;
   transition-duration: 0.001ms !important;
 }
+
+/* ===========================================================
+   Customization v2 — typography, spacing, glow, contrast
+=========================================================== */
+
+/* Font scale — affects html font-size so all rem units scale */
+html {
+  font-size: calc(16px * var(--c-font-scale, 1));
+}
+
+/* Spacing scale — multiplies common Tailwind gap/padding utilities via main */
+main {
+  --c-space: var(--c-spacing, 1);
+}
+
+/* Ambient glow on every primary button + interactive accent */
+button[class*="bg-primary"],
+a[class*="bg-primary"] {
+  box-shadow:
+    0 0 18px -4px color-mix(in oklab, var(--color-primary) calc(45% * var(--c-glow, 0.55)), transparent),
+    0 6px 18px -6px color-mix(in oklab, var(--color-primary) calc(40% * var(--c-shadow, 0.5)), transparent),
+    inset 0 1px 0 0 color-mix(in oklab, white 22%, transparent);
+}
+
+/* Soft glow ring around focused inputs */
+input:focus, textarea:focus, select:focus {
+  box-shadow:
+    0 0 0 2px color-mix(in oklab, var(--color-primary) 30%, transparent),
+    0 0 22px -4px color-mix(in oklab, var(--color-primary) calc(45% * var(--c-glow, 0.55)), transparent) !important;
+}
+
+/* High-contrast accessibility mode */
+:root[data-high-contrast="true"] {
+  --foreground: oklch(1 0 0);
+  --muted-foreground: oklch(0.85 0.01 250);
+  --border: oklch(0.6 0.02 250);
+  --c-glass-opacity: 80%;
+  --c-glow: 0.2;
+}
+:root[data-high-contrast="true"]:not(.dark) {
+  --foreground: oklch(0.05 0.01 250);
+  --muted-foreground: oklch(0.2 0.01 250);
+  --border: oklch(0.3 0.02 250);
+}
+:root[data-high-contrast="true"] * {
+  text-shadow: none !important;
+}
+
+/* Container hardening — prevent any overflow */
+*, *::before, *::after { box-sizing: border-box; }
+img, svg, video, canvas { max-width: 100%; height: auto; }
+
