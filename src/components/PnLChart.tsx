@@ -30,10 +30,11 @@ export function PnLChart({ holdings }: PnLChartProps) {
   }));
 
   return (
-    <div className="animate-fade-in rounded-xl border border-border bg-card p-3.5 sm:p-5">
+    <div className="min-w-0 animate-fade-in rounded-xl border border-border bg-card p-3.5 sm:p-5">
       <h3 className="mb-3 sm:mb-4 text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-muted-foreground">Profit & Loss</h3>
-      <ResponsiveContainer width="100%" height={240}>
-        <BarChart data={data} margin={{ top: 5, right: 5, bottom: 5, left: 0 }}>
+      <div className="h-[240px] min-w-0 overflow-hidden">
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart data={data} margin={{ top: 5, right: 4, bottom: 5, left: -12 }}>
           <XAxis dataKey="script" tick={{ fontSize: 10, fill: "var(--color-muted-foreground)" }} axisLine={false} tickLine={false} interval={0} angle={-35} textAnchor="end" height={50} />
           <YAxis tick={{ fontSize: 10, fill: "var(--color-muted-foreground)" }} axisLine={false} tickLine={false} width={40} />
           <Tooltip content={<CustomTooltip />} cursor={{ fill: "transparent" }} />
@@ -47,6 +48,7 @@ export function PnLChart({ holdings }: PnLChartProps) {
           </Bar>
         </BarChart>
       </ResponsiveContainer>
+      </div>
     </div>
   );
 }
