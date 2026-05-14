@@ -165,20 +165,20 @@ function AnalyticsPage() {
   const concentrationWarning = top2Pct > 50;
 
   return (
-    <div className="animate-fade-in space-y-6">
+    <div className="mx-auto w-full max-w-full animate-fade-in space-y-5 sm:space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
+        <div className="min-w-0">
           <h1 className="text-2xl font-bold text-foreground">Analytics</h1>
           <p className="text-xs sm:text-sm text-muted-foreground">A clean view of your portfolio performance</p>
         </div>
-        <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center">
+        <div className="grid w-full grid-cols-2 gap-2 sm:w-auto sm:flex sm:flex-wrap sm:items-center sm:justify-end">
           <MainSheetButton />
           <RefreshButton />
         </div>
       </div>
 
       {/* Top stat cards */}
-      <div className="grid gap-3 sm:gap-4 grid-cols-2 md:grid-cols-4">
+      <div className="grid grid-cols-1 gap-3 min-[360px]:grid-cols-2 sm:gap-4 md:grid-cols-4">
         <div className="animate-fade-in rounded-xl border border-border bg-card p-3.5 sm:p-4 transition-all hover:shadow-md">
           <div className="flex items-center gap-2 text-muted-foreground">
             <Target className="h-4 w-4 shrink-0" />
@@ -215,16 +215,16 @@ function AnalyticsPage() {
 
       {/* Growth + Allocation */}
       <div className="grid gap-4 lg:grid-cols-3">
-        <div className="rounded-xl border border-border bg-card p-5 lg:col-span-2">
+        <div className="rounded-xl border border-border bg-card p-3.5 sm:p-5 lg:col-span-2">
           <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h3 className="text-sm font-bold text-foreground">Portfolio Growth</h3>
               <p className="text-xs text-muted-foreground">Total portfolio value over time</p>
               <p className="mt-0.5 text-[10px] italic text-muted-foreground/80">Simulated data — real history not available</p>
             </div>
-            <div className="flex flex-col items-end gap-1">
+            <div className="flex flex-col items-start gap-1 sm:items-end">
               <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Illustrative range</span>
-              <div className="inline-flex rounded-lg border border-border bg-surface p-1">
+              <div className="inline-flex max-w-full rounded-lg border border-border bg-surface p-1">
                 {RANGES.map((r) => (
                   <button
                     key={r.key}
@@ -264,7 +264,7 @@ function AnalyticsPage() {
           </div>
         </div>
 
-        <div className="rounded-xl border border-border bg-card p-5">
+        <div className="rounded-xl border border-border bg-card p-3.5 sm:p-5">
           <h3 className="text-sm font-bold text-foreground">Portfolio Allocation</h3>
           <p className="text-xs text-muted-foreground">% distribution across stocks</p>
           <div className="mt-2 h-48">
@@ -350,7 +350,7 @@ function AnalyticsPage() {
                     <div className="text-[10px] text-muted-foreground">{positive ? "+" : ""}{Math.round(r.pnl).toLocaleString()}</div>
                   </div>
                 </div>
-                <div className="mt-2 grid grid-cols-3 gap-2 text-[11px]">
+                <div className="mt-2 grid grid-cols-1 gap-2 text-[11px] min-[360px]:grid-cols-3">
                   <div>
                     <p className="text-muted-foreground">Qty</p>
                     <p className="font-mono text-foreground">{r.shares.toLocaleString()}</p>
@@ -424,8 +424,8 @@ function AnalyticsPage() {
       </div>
 
       {/* 52-Week Range */}
-      <div className="rounded-xl border border-border bg-card p-5">
-        <div className="mb-4 flex items-center justify-between">
+      <div className="rounded-xl border border-border bg-card p-3.5 sm:p-5">
+        <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h3 className="text-sm font-bold text-foreground">52-Week Range</h3>
             <p className="text-xs text-muted-foreground">Where each stock trades between its yearly low and high</p>
@@ -441,7 +441,7 @@ function AnalyticsPage() {
             No holdings to display
           </div>
         ) : (
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-3 sm:gap-4 md:grid-cols-2">
           {holdings.map((h, idx) => {
             const range = Math.max(h.week52High - h.week52Low, 0.0001);
             const rawPct = ((h.ldcp - h.week52Low) / range) * 100;
@@ -473,7 +473,7 @@ function AnalyticsPage() {
                     title={`Current: ${h.ldcp.toFixed(2)}`}
                   />
                 </div>
-                <div className="mt-2 flex justify-between text-[11px] font-mono">
+          <div className="mt-2 flex flex-wrap justify-between gap-x-3 gap-y-1 text-[11px] font-mono">
                   <span className="text-loss">{h.week52Low.toFixed(2)}</span>
                   <span className="text-muted-foreground">
                     {h.upFromLow >= 0 ? "+" : ""}{h.upFromLow.toFixed(1)}% from low · −{Math.abs(h.downFromHigh).toFixed(1)}% from high

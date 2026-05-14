@@ -54,13 +54,13 @@ function PortfolioPage() {
   const totalChange = totalCurrent - totalBook;
 
   return (
-    <div className="animate-fade-in space-y-4 sm:space-y-5">
+    <div className="mx-auto w-full max-w-full animate-fade-in space-y-4 sm:space-y-5">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
+        <div className="min-w-0">
           <h1 className="text-2xl font-bold text-foreground">Portfolio</h1>
           <p className="text-xs sm:text-sm text-muted-foreground">Detailed view of all holdings</p>
         </div>
-        <div className="grid grid-cols-3 gap-2 sm:flex sm:flex-wrap sm:items-center">
+        <div className="grid w-full grid-cols-3 gap-2 sm:w-auto sm:flex sm:flex-wrap sm:items-center sm:justify-end">
           <HoldingsManager />
           <MainSheetButton />
           <RefreshButton />
@@ -69,7 +69,7 @@ function PortfolioPage() {
 
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div className="text-xs text-muted-foreground">{filtered.length} holdings</div>
-        <div className="flex items-center gap-2">
+        <div className="flex w-full items-center gap-2 sm:w-auto">
           <div className="relative flex-1 sm:flex-initial">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <input

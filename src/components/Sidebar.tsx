@@ -28,7 +28,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
       />
       <aside
         data-open={open ? "true" : "false"}
-        className={`fixed inset-y-0 left-0 z-50 flex h-screen w-64 max-w-[82vw] flex-col overflow-hidden border-r border-border bg-sidebar/95 backdrop-blur-xl transition-transform duration-300 lg:w-56 lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 flex h-dvh w-64 max-w-[82vw] flex-col overflow-hidden border-r border-border bg-sidebar/95 backdrop-blur-xl transition-transform duration-300 lg:w-56 lg:max-w-none lg:translate-x-0 ${
           open ? "translate-x-0" : "-translate-x-full"
         }`}
         style={{ paddingTop: "env(safe-area-inset-top)" }}

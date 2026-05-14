@@ -100,17 +100,17 @@ export function HoldingsManager() {
       </button>
 
       {open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fade-in p-4" onClick={() => setOpen(false)}>
+        <div className="fixed inset-0 z-[950] flex h-dvh w-screen max-w-full items-center justify-center overflow-y-auto bg-black/70 p-3 backdrop-blur-xl animate-fade-in sm:p-4" onClick={() => setOpen(false)}>
           <div
-            className="max-h-[90vh] w-full max-w-3xl overflow-hidden rounded-2xl border border-border bg-card shadow-2xl flex flex-col"
+            className="my-auto flex max-h-[calc(100dvh-1.5rem)] w-full max-w-3xl flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between border-b border-border px-5 py-4">
-              <div>
+            <div className="flex flex-col gap-3 border-b border-border px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+              <div className="min-w-0">
                 <h2 className="text-lg font-bold text-foreground">Manage Holdings</h2>
                 <p className="text-xs text-muted-foreground">Add, edit, or remove stocks. Changes are saved locally.</p>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex shrink-0 items-center justify-end gap-2">
                 <button
                   onClick={() => { if (confirm("Reset all local changes and restore sheet data?")) resetOverrides(); }}
                   className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-surface px-2.5 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:bg-surface-hover transition-all"
@@ -125,7 +125,7 @@ export function HoldingsManager() {
               </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-5 space-y-3">
+            <div className="flex-1 overflow-y-auto p-4 space-y-3 sm:p-5">
               {!adding && !editing && (
                 <button
                   onClick={startAdd}
@@ -138,9 +138,9 @@ export function HoldingsManager() {
 
               {(adding || editing) && (
                 <div className="rounded-xl border border-primary/40 bg-surface p-4 animate-fade-in">
-                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                  <div className="grid grid-cols-1 gap-3 min-[360px]:grid-cols-2 sm:grid-cols-4">
                     <Field label="Symbol" value={draft.script} onChange={(v) => setDraft({ ...draft, script: v })} disabled={!adding} />
-                    <Field label="Company" value={draft.company} onChange={(v) => setDraft({ ...draft, company: v })} className="col-span-2 sm:col-span-3" />
+                    <Field label="Company" value={draft.company} onChange={(v) => setDraft({ ...draft, company: v })} className="min-[360px]:col-span-2 sm:col-span-3" />
                     <Field label="Shares" value={draft.shares} onChange={(v) => setDraft({ ...draft, shares: v })} type="number" />
                     <Field label="LDCP" value={draft.ldcp} onChange={(v) => setDraft({ ...draft, ldcp: v })} type="number" />
                     <Field label="Avg Cost" value={draft.purchasedRate} onChange={(v) => setDraft({ ...draft, purchasedRate: v })} type="number" />

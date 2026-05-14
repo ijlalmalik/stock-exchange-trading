@@ -307,6 +307,9 @@
   * {
     border-color: var(--color-border);
   }
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
   html, body {
     /* `clip` prevents off-canvas drift without breaking sticky/fixed children */
     overflow-x: clip;
@@ -320,6 +323,22 @@
     font-family: var(--font-sans);
     -webkit-text-size-adjust: 100%;
     text-rendering: optimizeLegibility;
+  }
+  #root, body > div:first-child {
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: clip;
+  }
+  main, section, article, header, footer, nav, aside, div {
+    min-width: 0;
+  }
+  table {
+    max-width: 100%;
+  }
+  img, svg, video, canvas {
+    max-width: 100%;
+    height: auto;
   }
   /* Inner horizontally-scrollable wrappers (tables) */
   .overflow-x-auto {
@@ -337,6 +356,20 @@
     h2 { font-size: 1.25rem !important; line-height: 1.75rem !important; }
     h3 { font-size: 1.05rem !important; line-height: 1.5rem !important; }
     .card-pad-mobile { padding: 1rem !important; }
+  }
+  @media (max-width: 1023px) {
+    [data-app-content] {
+      padding-left: 0 !important;
+      margin-left: 0 !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      transform: none !important;
+    }
+    main {
+      margin-left: 0 !important;
+      width: 100% !important;
+      max-width: 100% !important;
+    }
   }
 }
 

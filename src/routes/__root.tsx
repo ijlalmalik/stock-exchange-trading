@@ -126,15 +126,14 @@ function AppShell() {
   }
 
   return (
-    <div className="flex min-h-screen w-full">
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden">
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-      <div className="flex flex-1 flex-col min-w-0 w-full lg:ml-56">
+      <div data-app-content className="flex min-h-screen w-full max-w-full min-w-0 flex-col lg:pl-56">
         <div className="lg:hidden">
           <MobileHeader onMenuClick={() => setSidebarOpen(true)} />
         </div>
         <main
-          className="flex-1 min-w-0 w-full px-3 pt-3 pb-24 sm:px-5 sm:pt-5 sm:pb-24 lg:px-6 lg:pt-6 lg:pb-6"
-          style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 5.5rem)" }}
+          className="mx-auto flex-1 min-w-0 w-full max-w-full px-3 pt-3 pb-[calc(env(safe-area-inset-bottom)+5.5rem)] sm:px-5 sm:pt-5 lg:max-w-[1440px] lg:px-6 lg:pt-6 lg:pb-6 2xl:max-w-[1600px]"
         >
           <Outlet />
         </main>
