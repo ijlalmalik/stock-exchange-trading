@@ -264,7 +264,7 @@ function AnalyticsPage() {
           </div>
         </div>
 
-        <div className="rounded-xl border border-border bg-card p-5">
+        <div className="rounded-xl border border-border bg-card p-3.5 sm:p-5">
           <h3 className="text-sm font-bold text-foreground">Portfolio Allocation</h3>
           <p className="text-xs text-muted-foreground">% distribution across stocks</p>
           <div className="mt-2 h-48">
@@ -424,8 +424,8 @@ function AnalyticsPage() {
       </div>
 
       {/* 52-Week Range */}
-      <div className="rounded-xl border border-border bg-card p-5">
-        <div className="mb-4 flex items-center justify-between">
+      <div className="rounded-xl border border-border bg-card p-3.5 sm:p-5">
+        <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h3 className="text-sm font-bold text-foreground">52-Week Range</h3>
             <p className="text-xs text-muted-foreground">Where each stock trades between its yearly low and high</p>
@@ -441,7 +441,7 @@ function AnalyticsPage() {
             No holdings to display
           </div>
         ) : (
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-3 sm:gap-4 md:grid-cols-2">
           {holdings.map((h, idx) => {
             const range = Math.max(h.week52High - h.week52Low, 0.0001);
             const rawPct = ((h.ldcp - h.week52Low) / range) * 100;
