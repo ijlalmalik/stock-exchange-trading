@@ -80,11 +80,15 @@ export function SettingsPanel({ variant = "icon", className = "" }: SettingsPane
       {open && (
         <div
           onClick={cancel}
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-3 backdrop-blur-md animate-fade-in sm:p-6"
+          className="fixed inset-0 z-[1000] flex h-dvh w-screen max-w-full items-center justify-center overflow-y-auto bg-black/75 p-3 backdrop-blur-xl animate-fade-in sm:p-6"
+          role="presentation"
         >
           <aside
             onClick={(e) => e.stopPropagation()}
-            className="relative flex max-h-[92vh] w-full max-w-[640px] flex-col overflow-hidden rounded-3xl border border-border bg-card shadow-2xl animate-fade-scale"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="settings-title"
+            className="relative my-auto flex max-h-[calc(100dvh-1.5rem)] w-full max-w-[min(92vw,760px)] flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-2xl animate-fade-scale sm:max-h-[min(88dvh,820px)] sm:rounded-3xl"
             style={{
               boxShadow:
                 "0 0 0 1px color-mix(in oklab, var(--color-primary) 20%, transparent), 0 0 60px -8px color-mix(in oklab, var(--color-primary) 35%, transparent), 0 30px 80px -20px rgba(0,0,0,0.6)",
@@ -96,7 +100,7 @@ export function SettingsPanel({ variant = "icon", className = "" }: SettingsPane
                   <Settings2 className="h-4 w-4" />
                 </div>
                 <div>
-                  <h2 className="text-sm font-bold text-foreground sm:text-base">Customize</h2>
+                  <h2 id="settings-title" className="text-sm font-bold text-foreground sm:text-base">Customize</h2>
                   <p className="hidden text-[11px] text-muted-foreground sm:block">Live preview — Apply to keep, Cancel to revert</p>
                 </div>
               </div>
