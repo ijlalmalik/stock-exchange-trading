@@ -44,7 +44,7 @@ function Dashboard() {
 
       <KSE100Ticker />
 
-      <div className="grid grid-cols-1 gap-3 xs:grid-cols-2 sm:gap-4 xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-3 min-[360px]:grid-cols-2 sm:gap-4 xl:grid-cols-4">
         <StatCard title="Portfolio Value" value={`PKR ${summary.totalCurrentValue.toLocaleString()}`} subtitle={`${summary.totalShares} shares • ${summary.stockCount} stocks`} icon={<Wallet className="h-4 w-4" />} />
         <StatCard title="Book Value" value={`PKR ${summary.totalBookValue.toLocaleString()}`} subtitle={`${summary.totalShares} shares • ${summary.stockCount} stocks`} icon={<BookOpen className="h-4 w-4" />} />
         <StatCard title="Total P&L" value={`PKR ${summary.totalPnL.toLocaleString()}`} subtitle="vs book value" icon={<TrendingUp className="h-4 w-4" />} variant={pnlVariant} />
