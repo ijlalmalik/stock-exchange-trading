@@ -29,13 +29,13 @@ function Dashboard() {
   const pnlVariant = summary.totalPnL >= 0 ? "gain" : "loss";
 
   return (
-    <div className="animate-fade-in space-y-4 sm:space-y-5">
+    <div className="mx-auto w-full max-w-full animate-fade-in space-y-4 sm:space-y-5">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
+        <div className="min-w-0">
           <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
           <p className="text-xs sm:text-sm text-muted-foreground">Overview of your portfolio performance</p>
         </div>
-        <div className="grid grid-cols-3 gap-2 sm:flex sm:flex-wrap sm:items-center">
+        <div className="grid w-full grid-cols-3 gap-2 sm:w-auto sm:flex sm:flex-wrap sm:items-center sm:justify-end">
           <HoldingsManager />
           <MainSheetButton />
           <RefreshButton />
@@ -44,7 +44,7 @@ function Dashboard() {
 
       <KSE100Ticker />
 
-      <div className="grid gap-3 sm:gap-4 grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-3 xs:grid-cols-2 sm:gap-4 xl:grid-cols-4">
         <StatCard title="Portfolio Value" value={`PKR ${summary.totalCurrentValue.toLocaleString()}`} subtitle={`${summary.totalShares} shares • ${summary.stockCount} stocks`} icon={<Wallet className="h-4 w-4" />} />
         <StatCard title="Book Value" value={`PKR ${summary.totalBookValue.toLocaleString()}`} subtitle={`${summary.totalShares} shares • ${summary.stockCount} stocks`} icon={<BookOpen className="h-4 w-4" />} />
         <StatCard title="Total P&L" value={`PKR ${summary.totalPnL.toLocaleString()}`} subtitle="vs book value" icon={<TrendingUp className="h-4 w-4" />} variant={pnlVariant} />
