@@ -178,7 +178,7 @@ function AnalyticsPage() {
       </div>
 
       {/* Top stat cards */}
-      <div className="grid grid-cols-1 gap-3 xs:grid-cols-2 sm:gap-4 md:grid-cols-4">
+      <div className="grid grid-cols-1 gap-3 min-[360px]:grid-cols-2 sm:gap-4 md:grid-cols-4">
         <div className="animate-fade-in rounded-xl border border-border bg-card p-3.5 sm:p-4 transition-all hover:shadow-md">
           <div className="flex items-center gap-2 text-muted-foreground">
             <Target className="h-4 w-4 shrink-0" />
