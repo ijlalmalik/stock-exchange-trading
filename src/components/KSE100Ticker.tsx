@@ -49,7 +49,7 @@ export function KSE100Ticker() {
           <span className="inline-flex h-2 w-2 animate-pulse rounded-full bg-gain" />
           <span className="text-[10px] font-medium text-gain">LIVE</span>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {data && <span className="text-[10px] text-muted-foreground">As of {data.timestamp}</span>}
           <a
             href="https://dps.psx.com.pk/"
@@ -71,9 +71,9 @@ export function KSE100Ticker() {
         <div className="space-y-3 sm:space-y-4">
           <div className="rounded-2xl border border-border bg-surface p-3 sm:p-4">
             <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
-              <div>
+              <div className="min-w-0">
                 <p className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.18em] sm:tracking-[0.24em] text-muted-foreground">Pakistan Stock Exchange</p>
-                <p className="mt-2 text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+                <p className="mt-2 break-words text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
                   {data.current.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </p>
               </div>
@@ -89,21 +89,21 @@ export function KSE100Ticker() {
           </div>
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-            <div className="rounded-xl border border-border bg-card px-4 py-3">
+            <div className="min-w-0 rounded-xl border border-border bg-card px-4 py-3">
               <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Day High</p>
-              <p className="mt-1 text-lg font-bold tracking-tight text-foreground">
+              <p className="mt-1 break-words text-lg font-bold tracking-tight text-foreground">
                 {data.high.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </p>
             </div>
-            <div className="rounded-xl border border-border bg-card px-4 py-3">
+            <div className="min-w-0 rounded-xl border border-border bg-card px-4 py-3">
               <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Day Low</p>
-              <p className="mt-1 text-lg font-bold tracking-tight text-foreground">
+              <p className="mt-1 break-words text-lg font-bold tracking-tight text-foreground">
                 {data.low.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </p>
             </div>
-            <div className="rounded-xl border border-border bg-card px-4 py-3">
+            <div className="min-w-0 rounded-xl border border-border bg-card px-4 py-3">
               <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Previous Close</p>
-              <p className="mt-1 text-lg font-bold tracking-tight text-foreground">
+              <p className="mt-1 break-words text-lg font-bold tracking-tight text-foreground">
                 {data.previousClose.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </p>
             </div>
