@@ -350,7 +350,7 @@ function AnalyticsPage() {
                     <div className="text-[10px] text-muted-foreground">{positive ? "+" : ""}{Math.round(r.pnl).toLocaleString()}</div>
                   </div>
                 </div>
-                <div className="mt-2 grid grid-cols-3 gap-2 text-[11px]">
+                <div className="mt-2 grid grid-cols-1 gap-2 text-[11px] min-[360px]:grid-cols-3">
                   <div>
                     <p className="text-muted-foreground">Qty</p>
                     <p className="font-mono text-foreground">{r.shares.toLocaleString()}</p>
@@ -473,7 +473,7 @@ function AnalyticsPage() {
                     title={`Current: ${h.ldcp.toFixed(2)}`}
                   />
                 </div>
-                <div className="mt-2 flex justify-between text-[11px] font-mono">
+          <div className="mt-2 flex flex-wrap justify-between gap-x-3 gap-y-1 text-[11px] font-mono">
                   <span className="text-loss">{h.week52Low.toFixed(2)}</span>
                   <span className="text-muted-foreground">
                     {h.upFromLow >= 0 ? "+" : ""}{h.upFromLow.toFixed(1)}% from low · −{Math.abs(h.downFromHigh).toFixed(1)}% from high
