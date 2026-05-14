@@ -133,8 +133,7 @@ function AppShell() {
           <MobileHeader onMenuClick={() => setSidebarOpen(true)} />
         </div>
         <main
-          className="mx-auto flex-1 min-w-0 w-full max-w-full px-3 pt-3 pb-24 sm:px-5 sm:pt-5 sm:pb-24 lg:max-w-[1440px] lg:px-6 lg:pt-6 lg:pb-6 2xl:max-w-[1600px]"
-          style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 5.5rem)" }}
+          className="mx-auto flex-1 min-w-0 w-full max-w-full px-3 pt-3 pb-[calc(env(safe-area-inset-bottom)+5.5rem)] sm:px-5 sm:pt-5 lg:max-w-[1440px] lg:px-6 lg:pt-6 lg:pb-6 2xl:max-w-[1600px]"
         >
           <Outlet />
         </main>
