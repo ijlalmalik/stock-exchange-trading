@@ -358,6 +358,13 @@
     .card-pad-mobile { padding: 1rem !important; }
   }
   @media (max-width: 1023px) {
+    [data-app-content] {
+      padding-left: 0 !important;
+      margin-left: 0 !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      transform: none !important;
+    }
     main {
       margin-left: 0 !important;
       width: 100% !important;
