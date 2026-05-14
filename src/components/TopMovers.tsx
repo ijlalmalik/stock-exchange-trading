@@ -25,14 +25,14 @@ export function TopMovers({ holdings }: TopMoversProps) {
               key={h.script}
               to="/portfolio"
               search={{ highlight: h.script }}
-              className="animate-fade-in flex items-center justify-between rounded-lg px-3 py-2.5 transition-all duration-200 hover:bg-surface-hover"
+              className="animate-fade-in flex min-w-0 items-center justify-between gap-3 rounded-lg px-3 py-2.5 transition-all duration-200 hover:bg-surface-hover"
               style={{ animationDelay: `${idx * 80}ms` }}
             >
-              <div>
+              <div className="min-w-0">
                 <p className="text-sm font-bold text-foreground">{h.script}</p>
-                <p className="max-w-[200px] truncate text-xs text-muted-foreground">{h.company}</p>
+                <p className="truncate text-xs text-muted-foreground">{h.company}</p>
               </div>
-              <div className="text-right">
+              <div className="shrink-0 text-right">
                 <p className="text-sm font-mono font-semibold text-gain">+{h.changePercent.toFixed(2)}%</p>
                 <p className="text-xs font-mono text-muted-foreground">PKR {Math.abs(h.change).toLocaleString()}</p>
               </div>
@@ -54,14 +54,14 @@ export function TopMovers({ holdings }: TopMoversProps) {
               key={h.script}
               to="/portfolio"
               search={{ highlight: h.script }}
-              className="animate-fade-in flex items-center justify-between rounded-lg px-3 py-2.5 transition-all duration-200 hover:bg-surface-hover"
+              className="animate-fade-in flex min-w-0 items-center justify-between gap-3 rounded-lg px-3 py-2.5 transition-all duration-200 hover:bg-surface-hover"
               style={{ animationDelay: `${(idx + 1) * 80 + 100}ms` }}
             >
-              <div>
+              <div className="min-w-0">
                 <p className="text-sm font-bold text-foreground">{h.script}</p>
-                <p className="max-w-[200px] truncate text-xs text-muted-foreground">{h.company}</p>
+                <p className="truncate text-xs text-muted-foreground">{h.company}</p>
               </div>
-              <div className="text-right">
+              <div className="shrink-0 text-right">
                 <p className="text-sm font-mono font-semibold text-loss">{h.changePercent.toFixed(2)}%</p>
                 <p className="text-xs font-mono text-muted-foreground">PKR {Math.abs(h.change).toLocaleString()}</p>
               </div>
