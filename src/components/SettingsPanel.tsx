@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Settings2, RotateCcw, X, Check, Sun, Moon, Type, Sparkles, Palette, Layout, Eye, Zap } from "lucide-react";
 import {
   useCustomization,
@@ -77,7 +78,7 @@ export function SettingsPanel({ variant = "icon", className = "" }: SettingsPane
         {variant === "full" && <span>Customize</span>}
       </button>
 
-      {open && (
+      {open && typeof document !== "undefined" && createPortal(
         <div
           onClick={cancel}
           className="fixed inset-0 z-[1000] flex h-dvh w-screen max-w-full items-center justify-center overflow-y-auto bg-black/75 p-3 backdrop-blur-xl animate-fade-in sm:p-6"
@@ -263,7 +264,8 @@ export function SettingsPanel({ variant = "icon", className = "" }: SettingsPane
               </div>
             </footer>
           </aside>
-        </div>
+        </div>,
+        document.body,
       )}
     </>
   );
