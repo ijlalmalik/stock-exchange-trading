@@ -112,21 +112,16 @@ function AppShell() {
     return <div className="fixed inset-0 z-[100] bg-[#05070d]" />;
   }
 
-  if (welcomeState === "show") {
-    return (
-      <WelcomeOverlay
-        onDone={() => {
-          try {
-            localStorage.setItem("welcome-seen", "1");
-          } catch {}
-          setWelcomeState("done");
-        }}
-      />
-    );
-  }
+  const finishWelcome = () => {
+    try {
+      localStorage.setItem("welcome-seen", "1");
+    } catch {}
+    setWelcomeState("done");
+    requestAnimationFrame(() => window.scrollTo({ top: 0, left: 0 }));
+  };
 
   return (
-    <div className="min-h-screen w-full max-w-full overflow-x-hidden">
+    <div key="app-shell" className="min-h-screen w-full max-w-full overflow-x-hidden">
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <div data-app-content className="flex min-h-screen w-full max-w-full min-w-0 flex-col lg:pl-56">
         <div className="lg:hidden">
@@ -140,6 +135,7 @@ function AppShell() {
       </div>
       <MobileBottomNav />
       <ViewModeFloating />
+      {welcomeState === "show" ? <WelcomeOverlay key="welcome-overlay" onDone={finishWelcome} /> : null}
     </div>
   );
 }
