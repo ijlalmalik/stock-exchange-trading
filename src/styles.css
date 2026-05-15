@@ -324,6 +324,9 @@
     -webkit-text-size-adjust: 100%;
     text-rendering: optimizeLegibility;
   }
+  body:has(.welcome-shake) {
+    overflow: hidden;
+  }
   #root, body > div:first-child {
     min-width: 0;
     width: 100%;
@@ -358,6 +361,17 @@
     .card-pad-mobile { padding: 1rem !important; }
   }
   @media (max-width: 1023px) {
+    body {
+      min-width: 0 !important;
+    }
+    aside:not([role="dialog"]) {
+      width: min(18rem, 82vw) !important;
+      max-width: 82vw !important;
+    }
+    aside:not([role="dialog"])[data-open="false"] {
+      pointer-events: none !important;
+      transform: translateX(-105%) !important;
+    }
     [data-app-content] {
       padding-left: 0 !important;
       margin-left: 0 !important;
