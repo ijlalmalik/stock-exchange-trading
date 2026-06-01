@@ -124,7 +124,7 @@ function AppShell() {
     <div key="app-shell" className="min-h-screen w-full max-w-full overflow-x-hidden">
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <div data-app-content className="flex min-h-screen w-full max-w-full min-w-0 flex-col items-stretch lg:pl-56">
-        <div className="lg:hidden">
+        <div data-mobile-header-shell className="lg:hidden">
           <MobileHeader onMenuClick={() => setSidebarOpen(true)} />
         </div>
         <main
