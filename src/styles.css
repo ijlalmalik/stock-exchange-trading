@@ -375,12 +375,15 @@
     [data-app-content] {
       padding-left: 0 !important;
       margin-left: 0 !important;
+      padding-top: 0 !important;
+      margin-top: 0 !important;
       width: 100% !important;
       max-width: 100% !important;
       transform: none !important;
     }
-    main {
+    [data-page-main] {
       margin-left: 0 !important;
+      margin-top: 0 !important;
       width: 100% !important;
       max-width: 100% !important;
     }
