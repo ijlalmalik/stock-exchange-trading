@@ -129,7 +129,7 @@ function AppShell() {
         </div>
         <main
           data-page-main
-          className="mx-auto block flex-1 self-start min-w-0 w-full max-w-full px-3 pt-3 pb-[calc(env(safe-area-inset-bottom)+5.5rem)] sm:px-5 sm:pt-5 lg:max-w-[1440px] lg:px-6 lg:pt-6 lg:pb-6 2xl:max-w-[1600px]"
+          className="mx-auto block flex-1 self-start min-w-0 w-full max-w-full px-3 pb-[calc(env(safe-area-inset-bottom)+5.5rem)] sm:px-5 lg:max-w-[1440px] lg:px-6 lg:pb-6 2xl:max-w-[1600px]"
         >
           <Outlet />
         </main>
