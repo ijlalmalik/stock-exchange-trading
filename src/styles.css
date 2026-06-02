@@ -498,6 +498,16 @@ body {
     0 0 24px -4px color-mix(in oklab, var(--color-primary) calc(22% * var(--c-glow, 0.55)), transparent),
     0 10px 32px -10px color-mix(in oklab, var(--color-foreground) calc(32% * var(--c-shadow, 0.5)), transparent),
     0 2px 6px -2px color-mix(in oklab, var(--color-foreground) calc(18% * var(--c-shadow, 0.5)), transparent);
+}
+
+.glass:not(.fixed):not(.absolute):not(.sticky),
+[class*="bg-card"]:not(.fixed):not(.absolute):not(.sticky),
+[class*="bg-surface"]:not(.fixed):not(.absolute):not(.sticky),
+[class*="bg-popover"]:not(.fixed):not(.absolute):not(.sticky),
+[class*="bg-secondary"]:not(.fixed):not(.absolute):not(.sticky),
+[class*="bg-muted"]:not(.fixed):not(.absolute):not(.sticky),
+[class*="bg-accent"]:not(.fixed):not(.absolute):not(.sticky),
+[class*="bg-sidebar"]:not(.fixed):not(.absolute):not(.sticky) {
   position: relative;
 }
 
