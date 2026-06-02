@@ -121,16 +121,15 @@ function AppShell() {
   };
 
   return (
-    <div key="app-shell" className="min-h-screen w-full max-w-full overflow-x-hidden">
+    <div key="app-shell" data-app-shell className="relative min-h-dvh w-full max-w-full overflow-x-hidden">
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-      <div data-app-content className="flex min-h-screen w-full max-w-full min-w-0 flex-col items-stretch lg:pl-56">
+      <div data-app-content className="relative z-10 flex min-h-dvh w-full max-w-full min-w-0 flex-col items-stretch">
         <div data-mobile-header-shell className="lg:hidden">
           <MobileHeader onMenuClick={() => setSidebarOpen(true)} />
         </div>
         <main
           data-page-main
-          className="mx-auto block flex-1 self-start min-w-0 w-full max-w-full px-3 pb-[calc(env(safe-area-inset-bottom)+5.5rem)] sm:px-5 lg:max-w-[1440px] lg:px-6 lg:pb-6 2xl:max-w-[1600px]"
-          style={{ paddingTop: "clamp(0.75rem, 2vw, 1.5rem)", marginTop: 0, transform: "none" }}
+          className="relative z-10 mx-auto block flex-1 self-stretch min-w-0 w-full max-w-full overflow-visible text-foreground lg:max-w-[1440px] 2xl:max-w-[1600px]"
         >
           <Outlet />
         </main>
