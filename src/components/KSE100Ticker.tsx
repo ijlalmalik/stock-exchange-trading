@@ -112,17 +112,26 @@ export function KSE100Ticker() {
           {error ? <p className="text-[11px] text-muted-foreground">Showing the latest available PSX snapshot.</p> : null}
         </div>
       ) : error ? (
-        <div className="space-y-3 py-2 text-center">
+        <div className="flex flex-col items-center gap-3 py-4 text-center">
           <p className="text-xs text-muted-foreground">{error}</p>
-          <a
-            href="https://dps.psx.com.pk/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 rounded-full border border-border bg-surface px-3 py-1.5 text-[11px] font-medium text-muted-foreground transition-all duration-300 hover:bg-surface-hover hover:text-foreground"
-          >
-            Open PSX
-            <ExternalLink className="h-3.5 w-3.5" />
-          </a>
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            <button
+              type="button"
+              onClick={() => void fetchKSE100(true)}
+              className="inline-flex items-center gap-1 rounded-full border border-border bg-primary/10 px-3 py-1.5 text-[11px] font-medium text-primary transition-all duration-300 hover:bg-primary/20"
+            >
+              Retry
+            </button>
+            <a
+              href="https://dps.psx.com.pk/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 rounded-full border border-border bg-surface px-3 py-1.5 text-[11px] font-medium text-muted-foreground transition-all duration-300 hover:bg-surface-hover hover:text-foreground"
+            >
+              Open PSX
+              <ExternalLink className="h-3.5 w-3.5" />
+            </a>
+          </div>
         </div>
       ) : null}
     </div>
