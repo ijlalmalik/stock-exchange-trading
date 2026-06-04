@@ -14,6 +14,7 @@ import { Route as PortfolioRouteImport } from './routes/portfolio'
 import { Route as LdcpRouteImport } from './routes/ldcp'
 import { Route as AnalyticsRouteImport } from './routes/analytics'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiPublicKse100RouteImport } from './routes/api/public/kse100'
 
 const WelcomeRoute = WelcomeRouteImport.update({
   id: '/welcome',
@@ -40,6 +41,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicKse100Route = ApiPublicKse100RouteImport.update({
+  id: '/api/public/kse100',
+  path: '/api/public/kse100',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -47,6 +53,7 @@ export interface FileRoutesByFullPath {
   '/ldcp': typeof LdcpRoute
   '/portfolio': typeof PortfolioRoute
   '/welcome': typeof WelcomeRoute
+  '/api/public/kse100': typeof ApiPublicKse100Route
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -54,6 +61,7 @@ export interface FileRoutesByTo {
   '/ldcp': typeof LdcpRoute
   '/portfolio': typeof PortfolioRoute
   '/welcome': typeof WelcomeRoute
+  '/api/public/kse100': typeof ApiPublicKse100Route
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -62,13 +70,33 @@ export interface FileRoutesById {
   '/ldcp': typeof LdcpRoute
   '/portfolio': typeof PortfolioRoute
   '/welcome': typeof WelcomeRoute
+  '/api/public/kse100': typeof ApiPublicKse100Route
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/analytics' | '/ldcp' | '/portfolio' | '/welcome'
+  fullPaths:
+    | '/'
+    | '/analytics'
+    | '/ldcp'
+    | '/portfolio'
+    | '/welcome'
+    | '/api/public/kse100'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/analytics' | '/ldcp' | '/portfolio' | '/welcome'
-  id: '__root__' | '/' | '/analytics' | '/ldcp' | '/portfolio' | '/welcome'
+  to:
+    | '/'
+    | '/analytics'
+    | '/ldcp'
+    | '/portfolio'
+    | '/welcome'
+    | '/api/public/kse100'
+  id:
+    | '__root__'
+    | '/'
+    | '/analytics'
+    | '/ldcp'
+    | '/portfolio'
+    | '/welcome'
+    | '/api/public/kse100'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -77,6 +105,7 @@ export interface RootRouteChildren {
   LdcpRoute: typeof LdcpRoute
   PortfolioRoute: typeof PortfolioRoute
   WelcomeRoute: typeof WelcomeRoute
+  ApiPublicKse100Route: typeof ApiPublicKse100Route
 }
 
 declare module '@tanstack/react-router' {
@@ -116,6 +145,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/kse100': {
+      id: '/api/public/kse100'
+      path: '/api/public/kse100'
+      fullPath: '/api/public/kse100'
+      preLoaderRoute: typeof ApiPublicKse100RouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -125,6 +161,7 @@ const rootRouteChildren: RootRouteChildren = {
   LdcpRoute: LdcpRoute,
   PortfolioRoute: PortfolioRoute,
   WelcomeRoute: WelcomeRoute,
+  ApiPublicKse100Route: ApiPublicKse100Route,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
