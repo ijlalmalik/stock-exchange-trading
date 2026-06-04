@@ -17,7 +17,18 @@ export function KSE100Ticker() {
       setData(snapshot);
       setError(null);
     } catch {
-      setError("Unable to load live data");
+      try {
+        const response = await fetch(`/api/public/kse100?t=${Date.now()}`, {
+          cache: "no-store",
+          headers: { accept: "application/json" },
+        });
+        if (!response.ok) throw new Error("KSE endpoint failed");
+        const snapshot = (await response.json()) as KSE100Snapshot;
+        setData(snapshot);
+        setError(null);
+      } catch {
+        setError("Unable to load live data");
+      }
     } finally {
       setLoading(false);
     }
