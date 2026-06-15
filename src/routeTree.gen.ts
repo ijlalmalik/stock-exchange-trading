@@ -14,6 +14,7 @@ import { Route as PortfolioRouteImport } from './routes/portfolio'
 import { Route as LdcpRouteImport } from './routes/ldcp'
 import { Route as AnalyticsRouteImport } from './routes/analytics'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiPublicPsxPricesRouteImport } from './routes/api/public/psx-prices'
 import { Route as ApiPublicKse100RouteImport } from './routes/api/public/kse100'
 
 const WelcomeRoute = WelcomeRouteImport.update({
@@ -41,6 +42,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicPsxPricesRoute = ApiPublicPsxPricesRouteImport.update({
+  id: '/api/public/psx-prices',
+  path: '/api/public/psx-prices',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicKse100Route = ApiPublicKse100RouteImport.update({
   id: '/api/public/kse100',
   path: '/api/public/kse100',
@@ -54,6 +60,7 @@ export interface FileRoutesByFullPath {
   '/portfolio': typeof PortfolioRoute
   '/welcome': typeof WelcomeRoute
   '/api/public/kse100': typeof ApiPublicKse100Route
+  '/api/public/psx-prices': typeof ApiPublicPsxPricesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -62,6 +69,7 @@ export interface FileRoutesByTo {
   '/portfolio': typeof PortfolioRoute
   '/welcome': typeof WelcomeRoute
   '/api/public/kse100': typeof ApiPublicKse100Route
+  '/api/public/psx-prices': typeof ApiPublicPsxPricesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -71,6 +79,7 @@ export interface FileRoutesById {
   '/portfolio': typeof PortfolioRoute
   '/welcome': typeof WelcomeRoute
   '/api/public/kse100': typeof ApiPublicKse100Route
+  '/api/public/psx-prices': typeof ApiPublicPsxPricesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -81,6 +90,7 @@ export interface FileRouteTypes {
     | '/portfolio'
     | '/welcome'
     | '/api/public/kse100'
+    | '/api/public/psx-prices'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -89,6 +99,7 @@ export interface FileRouteTypes {
     | '/portfolio'
     | '/welcome'
     | '/api/public/kse100'
+    | '/api/public/psx-prices'
   id:
     | '__root__'
     | '/'
@@ -97,6 +108,7 @@ export interface FileRouteTypes {
     | '/portfolio'
     | '/welcome'
     | '/api/public/kse100'
+    | '/api/public/psx-prices'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -106,6 +118,7 @@ export interface RootRouteChildren {
   PortfolioRoute: typeof PortfolioRoute
   WelcomeRoute: typeof WelcomeRoute
   ApiPublicKse100Route: typeof ApiPublicKse100Route
+  ApiPublicPsxPricesRoute: typeof ApiPublicPsxPricesRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -145,6 +158,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/psx-prices': {
+      id: '/api/public/psx-prices'
+      path: '/api/public/psx-prices'
+      fullPath: '/api/public/psx-prices'
+      preLoaderRoute: typeof ApiPublicPsxPricesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/kse100': {
       id: '/api/public/kse100'
       path: '/api/public/kse100'
@@ -162,6 +182,7 @@ const rootRouteChildren: RootRouteChildren = {
   PortfolioRoute: PortfolioRoute,
   WelcomeRoute: WelcomeRoute,
   ApiPublicKse100Route: ApiPublicKse100Route,
+  ApiPublicPsxPricesRoute: ApiPublicPsxPricesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

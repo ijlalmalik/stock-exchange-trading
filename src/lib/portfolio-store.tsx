@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { fetchPortfolioData, type StockHolding } from "@/lib/google-sheets";
+import { getPSXPrices, type PSXPricesResult } from "@/lib/psx-prices";
 
 const OVERRIDES_KEY = "portfolio_overrides_v1";
 const DELETED_KEY = "portfolio_deleted_v1";
@@ -37,6 +38,7 @@ interface PortfolioCtx {
   loading: boolean;
   refreshing: boolean;
   lastUpdated: Date | null;
+  psxTimestamp: string | null;
   refresh: () => Promise<void>;
   addHolding: (h: Omit<StockHolding, "no" | "currentValue" | "bookValue" | "change" | "changePercent" | "upFromLow" | "downFromHigh" | "direction">) => void;
   updateHolding: (script: string, patch: Partial<StockHolding>) => void;
@@ -46,6 +48,24 @@ interface PortfolioCtx {
 
 const Ctx = createContext<PortfolioCtx | null>(null);
 
+async function loadPSXPrices(): Promise<PSXPricesResult | null> {
+  try {
+    return await getPSXPrices();
+  } catch {
+    // Fallback to public API route (helps on mobile / when RPC fails)
+    try {
+      const res = await fetch(`/api/public/psx-prices?t=${Date.now()}`, {
+        cache: "no-store",
+        headers: { accept: "application/json" },
+      });
+      if (!res.ok) return null;
+      return (await res.json()) as PSXPricesResult;
+    } catch {
+      return null;
+    }
+  }
+}
+
 export function PortfolioProvider({ children }: { children: ReactNode }) {
   const [remote, setRemote] = useState<StockHolding[]>([]);
   const [loading, setLoading] = useState(true);
@@ -54,13 +74,24 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
   const [overrides, setOverrides] = useState<Overrides>(() => loadJSON(OVERRIDES_KEY, {}));
   const [deleted, setDeleted] = useState<string[]>(() => loadJSON(DELETED_KEY, []));
   const [added, setAdded] = useState<StockHolding[]>(() => loadJSON(ADDED_KEY, []));
+  const [psxPrices, setPsxPrices] = useState<Record<string, number>>({});
+  const [psxTimestamp, setPsxTimestamp] = useState<string | null>(null);
   const tickRef = useRef(0);
+
+  const refreshPSX = useCallback(async () => {
+    const res = await loadPSXPrices();
+    if (res && Object.keys(res.prices).length > 0) {
+      // Keep last known prices for symbols missing from this snapshot
+      setPsxPrices((prev) => ({ ...prev, ...res.prices }));
+      setPsxTimestamp(res.timestamp);
+    }
+  }, []);
 
   const load = useCallback(async (isRefresh = false) => {
     if (isRefresh) setRefreshing(true);
     else setLoading(true);
     try {
-      const data = await fetchPortfolioData();
+      const [data] = await Promise.all([fetchPortfolioData(), refreshPSX()]);
       setRemote(data);
       setLastUpdated(new Date());
     } catch (e) {
@@ -69,11 +100,19 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
       setLoading(false);
       setRefreshing(false);
     }
-  }, []);
+  }, [refreshPSX]);
 
   useEffect(() => {
     void load(false);
   }, [load]);
+
+  // Auto-refresh PSX prices every 60 seconds
+  useEffect(() => {
+    const id = setInterval(() => {
+      void refreshPSX();
+    }, 60_000);
+    return () => clearInterval(id);
+  }, [refreshPSX]);
 
   const refresh = useCallback(async () => {
     tickRef.current += 1;
@@ -82,15 +121,20 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
   }, [load]);
 
   const holdings = useMemo(() => {
+    const applyPSX = (h: StockHolding): StockHolding => {
+      const live = psxPrices[h.script?.toUpperCase?.() ?? ""];
+      return Number.isFinite(live) && live! > 0 ? recompute({ ...h, ldcp: live! }) : h;
+    };
     const base = remote
       .filter((h) => !deleted.includes(h.script))
       .map((h) => {
         const ov = overrides[h.script];
-        return ov ? recompute({ ...h, ...ov }) : h;
+        const merged = ov ? recompute({ ...h, ...ov }) : h;
+        return applyPSX(merged);
       });
-    const extra = added.map((h, i) => recompute({ ...h, no: base.length + i + 1 }));
+    const extra = added.map((h, i) => applyPSX(recompute({ ...h, no: base.length + i + 1 })));
     return [...base, ...extra];
-  }, [remote, overrides, deleted, added]);
+  }, [remote, overrides, deleted, added, psxPrices]);
 
   const addHolding: PortfolioCtx["addHolding"] = useCallback((h) => {
     const next = [...added, { ...h, no: 0, direction: "", currentValue: 0, bookValue: 0, change: 0, changePercent: 0, upFromLow: 0, downFromHigh: 0 } as StockHolding];
@@ -133,7 +177,7 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <Ctx.Provider value={{ holdings, loading, refreshing, lastUpdated, refresh, addHolding, updateHolding, deleteHolding, resetOverrides }}>
+    <Ctx.Provider value={{ holdings, loading, refreshing, lastUpdated, psxTimestamp, refresh, addHolding, updateHolding, deleteHolding, resetOverrides }}>
       {children}
     </Ctx.Provider>
   );

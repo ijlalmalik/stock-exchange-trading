@@ -15,7 +15,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Dashboard() {
-  const { holdings, loading } = usePortfolio();
+  const { holdings, loading, psxTimestamp } = usePortfolio();
 
   if (loading) {
     return (
@@ -34,6 +34,10 @@ function Dashboard() {
         <div className="min-w-0">
           <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
           <p className="text-xs sm:text-sm text-muted-foreground">Overview of your portfolio performance</p>
+          <p className="mt-1 text-[10px] sm:text-[11px] text-muted-foreground">
+            PSX data — delayed by 5 minutes
+            {psxTimestamp ? ` • Updated: ${psxTimestamp}` : ""}
+          </p>
         </div>
         <div className="grid w-full grid-cols-3 gap-2 sm:w-auto sm:flex sm:flex-wrap sm:items-center sm:justify-end">
           <HoldingsManager />
