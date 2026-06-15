@@ -1,12 +1,11 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { LayoutDashboard, Briefcase, BarChart3, Radio, X } from "lucide-react";
+import { LayoutDashboard, Briefcase, BarChart3, X } from "lucide-react";
 import { SettingsPanel } from "@/components/SettingsPanel";
 
 const NAV = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },
   { to: "/portfolio", label: "Portfolio", icon: Briefcase },
   { to: "/analytics", label: "Analytics", icon: BarChart3 },
-  { to: "/ldcp", label: "LDCP Live", icon: Radio },
 ] as const;
 
 interface SidebarProps {
