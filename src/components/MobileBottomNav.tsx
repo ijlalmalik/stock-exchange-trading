@@ -1,11 +1,10 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { LayoutDashboard, Briefcase, BarChart3, Radio } from "lucide-react";
+import { LayoutDashboard, Briefcase, BarChart3 } from "lucide-react";
 
 const NAV = [
   { to: "/", label: "Home", icon: LayoutDashboard },
   { to: "/portfolio", label: "Portfolio", icon: Briefcase },
   { to: "/analytics", label: "Stats", icon: BarChart3 },
-  { to: "/ldcp", label: "LDCP", icon: Radio },
 ] as const;
 
 export function MobileBottomNav() {
@@ -16,7 +15,7 @@ export function MobileBottomNav() {
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
       aria-label="Primary"
     >
-      <ul className="mx-auto grid max-w-screen-sm grid-cols-4">
+      <ul className="mx-auto grid max-w-screen-sm grid-cols-3">
         {NAV.map((item) => {
           const active =
             item.to === "/"
