@@ -6,6 +6,10 @@ interface TopMoversProps {
   holdings: StockHolding[];
 }
 
+function formatPKR(n: number) {
+  return n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
 export function TopMovers({ holdings }: TopMoversProps) {
   const sorted = [...holdings].sort((a, b) => b.changePercent - a.changePercent);
   const gainers = sorted.filter((h) => h.changePercent > 0);
@@ -34,7 +38,8 @@ export function TopMovers({ holdings }: TopMoversProps) {
               </div>
               <div className="shrink-0 text-right">
                 <p className="text-sm font-mono font-semibold text-gain">+{h.changePercent.toFixed(2)}%</p>
-                <p className="text-xs font-mono text-muted-foreground">PKR {Math.abs(h.change).toLocaleString()}</p>
+                <p className="text-xs font-mono text-foreground">PKR {formatPKR(h.ldcp)}</p>
+                <p className="text-[10px] font-mono text-muted-foreground">P/L {formatPKR(Math.abs(h.change))}</p>
               </div>
             </Link>
           ))}
@@ -63,7 +68,8 @@ export function TopMovers({ holdings }: TopMoversProps) {
               </div>
               <div className="shrink-0 text-right">
                 <p className="text-sm font-mono font-semibold text-loss">{h.changePercent.toFixed(2)}%</p>
-                <p className="text-xs font-mono text-muted-foreground">PKR {Math.abs(h.change).toLocaleString()}</p>
+                <p className="text-xs font-mono text-foreground">PKR {formatPKR(h.ldcp)}</p>
+                <p className="text-[10px] font-mono text-muted-foreground">P/L {formatPKR(Math.abs(h.change))}</p>
               </div>
             </Link>
           ))}
