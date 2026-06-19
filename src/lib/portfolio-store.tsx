@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { fetchPortfolioData, type StockHolding } from "@/lib/google-sheets";
-import { getPSXPrices, type PSXPricesResult } from "@/lib/psx-prices";
+import type { PSXPricesResult } from "@/lib/psx-prices";
 
 const OVERRIDES_KEY = "portfolio_overrides_v1";
 const DELETED_KEY = "portfolio_deleted_v1";
@@ -50,19 +50,14 @@ const Ctx = createContext<PortfolioCtx | null>(null);
 
 async function loadPSXPrices(): Promise<PSXPricesResult | null> {
   try {
-    return await getPSXPrices();
+    const res = await fetch(`/api/public/psx-prices?t=${Date.now()}`, {
+      cache: "no-store",
+      headers: { accept: "application/json" },
+    });
+    if (!res.ok) return null;
+    return (await res.json()) as PSXPricesResult;
   } catch {
-    // Fallback to public API route (helps on mobile / when RPC fails)
-    try {
-      const res = await fetch(`/api/public/psx-prices?t=${Date.now()}`, {
-        cache: "no-store",
-        headers: { accept: "application/json" },
-      });
-      if (!res.ok) return null;
-      return (await res.json()) as PSXPricesResult;
-    } catch {
-      return null;
-    }
+    return null;
   }
 }
 
