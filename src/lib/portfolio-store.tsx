@@ -118,16 +118,19 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
   const holdings = useMemo(() => {
     const applyPSX = (h: StockHolding): StockHolding => {
       const live = psxPrices[h.script?.toUpperCase?.() ?? ""];
-      return Number.isFinite(live) && live! > 0 ? recompute({ ...h, ldcp: live! }) : h;
+      const ldcp = Number.isFinite(live) && live! > 0 ? live! : h.ldcp;
+      // Always recompute so summary totals are consistent across devices
+      // regardless of sheet rounding or whether a PSX live price is present.
+      return recompute({ ...h, ldcp });
     };
     const base = remote
       .filter((h) => !deleted.includes(h.script))
       .map((h) => {
         const ov = overrides[h.script];
-        const merged = ov ? recompute({ ...h, ...ov }) : h;
+        const merged = ov ? { ...h, ...ov } : h;
         return applyPSX(merged);
       });
-    const extra = added.map((h, i) => applyPSX(recompute({ ...h, no: base.length + i + 1 })));
+    const extra = added.map((h, i) => applyPSX({ ...h, no: base.length + i + 1 }));
     return [...base, ...extra];
   }, [remote, overrides, deleted, added, psxPrices]);
 
